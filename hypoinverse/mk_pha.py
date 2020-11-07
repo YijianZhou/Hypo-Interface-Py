@@ -24,7 +24,7 @@ for i,line in enumerate(lines):
   codes = line.split(',')
   if len(codes)==5:
     # write head line
-    ot, lat, lon, dep, mag = codes
+    ot, lat, lon, mag, _ = codes
     ot = UTCDateTime(ot)
     date, time = split_datetime(ot)
     mag = max(float(mag) + mag_corr, 0.)
@@ -42,8 +42,7 @@ for i,line in enumerate(lines):
     evid += 1
   else:
     # write sta line
-    sta, tp, ts = codes
-    net = 'R3' if sta[0:2]=='XC' else 'SC' #TODO
+    net, sta, tp, ts = codes[0:4]
     tp = UTCDateTime(tp) if tp!='-1' else -1
     ts = UTCDateTime(ts) if ts[:-1]!='-1' else -1
     date = split_datetime(tp)[0] if tp!=-1 else split_datetime(ts)[0]
