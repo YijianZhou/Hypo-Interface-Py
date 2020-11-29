@@ -9,14 +9,14 @@ class Config(object):
     # 1. format input
     self.fsta_in = 'input/station_xq_gain.dat'
     self.fsta_out = 'input/station.dat'
-    self.fpha_in = 'input/xq_pad_hyp-ct_all.pha'
+    self.fpha_ct = 'input/xq_pad_hyp-ct_all.pha'
+    self.fpha_org = 'input/xq_pad_hyp_all.pha'
     self.fnames = 'input/xq_pad.names' 
 
     # 2. ph2dt_cc
     # input files
     self.event_root = '/data3/bigdata/zhouyj/Gorkha_events'
-    self.num_workers_read = 20
-    self.num_workers_calc = 10
+    self.num_workers = 20
     self.dep_corr = 5 # avoid air quake
     # thres for event pair linking
     self.cc_thres = [0.3, 0.3] # CC thres for event pair

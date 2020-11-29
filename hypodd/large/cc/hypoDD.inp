@@ -1,7 +1,7 @@
 * RELOC.INP:
 *--- input file selection
 * cross correlation diff times:
-input/dt.cc
+input/dt_all.cc
 *
 * catalog diff travel times:
 input/dt.ct

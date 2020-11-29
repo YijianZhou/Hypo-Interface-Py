@@ -18,14 +18,15 @@ mp.set_sharing_strategy('file_system')
 
 cfg = config.Config()
 # i/o paths
-fpha = cfg.fpha_in
+fpha_ct = cfg.fpha_ct
+fpha_org = cfg.fpha_org
 fnames = cfg.fnames
 fsta = cfg.fsta_in
 event_root = cfg.event_root
 out_dt = open(cfg.out_dt,'w')
 out_event = open(cfg.out_event,'w') if cfg.out_event else None
 # quality control: event pair linking
-num_workers = cfg.num_workers_calc
+num_workers = cfg.num_workers
 cc_thres = cfg.cc_thres[0] # min cc
 loc_dev_thres = cfg.loc_dev_thres[0] # max dev loc
 dist_thres = cfg.dist_thres[0] # max epi-dist
@@ -72,10 +73,10 @@ def calc_dt(event_list, sta_dict, out_dt):
     dt_loader = DataLoader(dt_dataset, num_workers=num_workers, batch_size=None)
     link_num = 0
     t = time.time()
-    for i, [[data_idx, temp_idx],dt_dict] in enumerate(dt_loader):
+    for i, [[data_evid, temp_evid],dt_dict] in enumerate(dt_loader):
         if i%10000==0: print('done/total {}/{} | {} pairs linked | {:.1f}s'.format(i, num_pairs, link_num, time.time()-t))
         if len(dt_dict) < num_sta_thres: continue
-        write_dt(data_idx, temp_idx, dt_dict, out_dt)
+        write_dt(data_evid, temp_evid, dt_dict, out_dt)
         link_num += 1
 
 
@@ -92,8 +93,8 @@ class Diff_TT(Dataset):
     # calc one event pair
     data_idx = np.where(index+1<=self.cum_num_rows)[0][0]
     temp_idx = (index+1-self.cum_num_rows[data_idx-1]) + data_idx if data_idx>0 else data_idx+1
-    data_loc, pha_dict_data = self.event_list[data_idx]
-    temp_loc, pha_dict_temp = self.event_list[temp_idx]
+    data_evid, data_loc, pha_dict_data = self.event_list[data_idx]
+    temp_evid, temp_loc, pha_dict_temp = self.event_list[temp_idx]
     data_lat, data_lon = data_loc[1:3]
     temp_lat, temp_lon = temp_loc[1:3]
     # check loc dev, num sta
@@ -137,22 +138,22 @@ class Diff_TT(Dataset):
             elif abs(dt_s)>dt_thres[1]: dt_s, cc_s = [None]*2
         else: dt_s, cc_s = [None]*2
         if dt_p or dt_s: dt_dict[sta] = [dt_p, dt_s, cc_p, cc_s]
-    return [data_idx, temp_idx], dt_dict
+    return [data_evid, temp_evid], dt_dict
 
   def __len__(self):
     return int(self.num_events * (self.num_events-1) / 2)
 
 
 # write dt.cc
-def write_dt(data_idx, temp_idx, dt_dict, out_dt):
-    out_dt.write('# {:9} {:9} 0.0\n'.format(data_idx, temp_idx))
+def write_dt(data_evid, temp_evid, dt_dict, out_dt):
+    out_dt.write('# {:9} {:9} 0.0\n'.format(data_evid, temp_evid))
     for sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
         if dt_p: out_dt.write('{:7} {:8.5f} {:.4f} P\n'.format(sta, dt_p, cc_p**0.5))
         if dt_s: out_dt.write('{:7} {:8.5f} {:.4f} S\n'.format(sta, dt_s, cc_s**0.5))
 
 # write event.dat
 def write_event(event_list, out_event):
-    for evid, [event_loc, _] in enumerate(event_list):
+    for [evid, event_loc, _] in event_list:
         ot, lat, lon, dep, mag = event_loc
         dep += dep_corr
         date = '{:0>4}{:0>2}{:0>2}'.format(ot.year, ot.month, ot.day)
@@ -167,7 +168,7 @@ if __name__ == '__main__':
 
     # read event data & sta file
     sta_dict = read_fsta(fsta)
-    event_list = get_event_list(fpha, fnames, event_root)
+    event_list = get_event_list(fpha_ct, fpha_org, fnames, event_root)
     # calc & write dt
     calc_dt(event_list, sta_dict, out_dt)
     out_dt.close()

@@ -10,7 +10,6 @@ import config
 
 # hypo-params
 cfg = config.Config()
-num_workers = cfg.num_workers_read
 to_prep = cfg.to_prep
 samp_rate = cfg.samp_rate
 freq_band = cfg.freq_band
@@ -27,24 +26,28 @@ npts_temp_s = int(samp_rate*sum(win_temp_s))
 num_sta_thres = cfg.num_sta_thres[0] # min sta 
 
 # get event list (st_paths)
-def get_event_list(fpha, fnames, event_root):
+def get_event_list(fpha_ct, fpha_org, fnames, event_root):
     # 1. read phase file
     print('reading phase file')
     name_dict = read_fnames(fnames)
-    event_list = read_fpha(fpha, name_dict)
+    event_list = read_fpha(fpha_ct, name_dict)
+    event_list_org = read_fpha(fpha_org, name_dict)
+    ot_dict = {}
+    for [evid, _, event_loc, _] in event_list_org: ot_dict[evid] = event_loc[0]
     num_events = len(event_list)
     # 2. get stream paths
     print('getting event data paths')
-    for i, [event_name, event_loc, pha_dict_pick] in enumerate(event_list): 
+    for i, [evid, event_name, event_loc, pha_dict_pick] in enumerate(event_list): 
         if len(pha_dict_pick)<num_sta_thres: continue
         event_dir = os.path.join(event_root, event_name)
+        event_loc[0] = ot_dict[evid]
         pha_dict = {}
         for sta, [tp,ts] in pha_dict_pick.items():
             # read event stream & check time range
             st_paths = sorted(glob.glob(os.path.join(event_dir, '*.%s.*'%sta)))
             if len(st_paths)!=3: continue
             pha_dict[sta] = [st_paths, tp, ts]
-        event_list[i] = [event_loc, pha_dict]
+        event_list[i] = [evid, event_loc, pha_dict]
     return event_list
 
 
@@ -93,7 +96,7 @@ def read_fpha(fpha, name_dict):
             evid = codes[-1][:-1]
             event_name = name_dict[evid]
             event_loc = [ot, lat, lon, dep, mag]
-            event_list.append([event_name, event_loc, {}])
+            event_list.append([evid, event_name, event_loc, {}])
         else:
             net, sta = codes[0:2]
             tp = UTCDateTime(codes[2]) if codes[2]!='-1' else -1
