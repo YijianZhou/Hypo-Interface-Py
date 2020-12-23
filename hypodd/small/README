@@ -1,4 +1,5 @@
-HypoDD interface (for small datasets):
+HypoDD interface for small datasets. Suitable for <4000 events, usually single cluster in small area.
+
 1. Files
   (1) config file
     config.py
