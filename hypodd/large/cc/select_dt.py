@@ -7,7 +7,7 @@ import config
 cfg = config.Config()
 # i/o paths
 fdt_in = 'input/dt_all.cc'
-fdt_out = open('input/dt.cc','w')
+fdt_out = open('input/dt_0.5.cc','w')
 fevent = 'input/event.dat'
 fsta = cfg.fsta_in
 # thres for linking event pairs
@@ -56,11 +56,13 @@ for i,line in enumerate(lines):
     if i%1e6==0: print('done/total %s/%s | %s pairs selected'%(i,len(lines),len(dt_list)))
     codes = line.split()
     if line[0]=='#':
+        to_add = True
         data_id, temp_id = codes[1:3]
+        if data_id not in event_dict or temp_id not in event_dict: 
+            to_add = False; continue
         data_lat, data_lon = event_dict[data_id][0:2]
         temp_lat, temp_lon = event_dict[temp_id][0:2]
         # 1. select loc dev
-        to_add = True
         loc_dev = calc_dist([data_lat,temp_lat], [data_lon,temp_lon])
         if loc_dev>loc_dev_thres: to_add = False; continue
         dt_list.append([[data_id, temp_id], line, []])

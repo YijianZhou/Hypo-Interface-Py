@@ -20,7 +20,7 @@ cfg = config.Config()
 fpha_temp = cfg.fpha_temp
 fsta = cfg.fsta_in
 event_root = cfg.event_root
-out_dt = open(cfg.out_dt,'w')
+#out_dt = open(cfg.out_dt,'w')
 out_event = open(cfg.out_event,'w')
 # quality control: event pair linking
 num_workers = cfg.num_workers
@@ -199,9 +199,9 @@ if __name__ == '__main__':
     # read event data & sta file
     sta_dict = read_fsta(fsta)
     event_list = get_event_list(fpha_temp, event_root)
-    # 1. write event
-    write_event(event_list, out_event)
-    out_event.close()
-    # 2. calc & write dt
+    # 1. calc & write dt
     calc_dt(event_list, sta_dict, out_dt)
     out_dt.close()
+    # 2. write event
+    write_event(event_list, out_event)
+    out_event.close()

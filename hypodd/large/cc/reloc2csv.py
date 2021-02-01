@@ -22,7 +22,7 @@ dep_corr = cfg.dep_corr
 out_ctlg = open(cfg.out_ctlg,'w')
 out_pha = open(cfg.out_pha,'w')
 out_pha_all = open(cfg.out_pha_all,'w')
-pha_dict = read_pha(cfg.fpha_in)
+pha_dict = read_pha(cfg.fpha_loc)
 freloc = 'output/hypoDD.reloc'
 f=open(freloc); lines=f.readlines(); f.close()
 
