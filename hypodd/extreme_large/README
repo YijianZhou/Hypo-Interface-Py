@@ -1,5 +1,7 @@
-HypoDD interface:
-1. Files
+HypoDD interface (for extreme large dataset)
+
+1. dt.ct reloc
+1.1 Files
   (1) config file
     config.py
     hypodd.inp
@@ -7,17 +9,12 @@ HypoDD interface:
   (2) format transfer
     mk_sta.py
     mk_pha.py
-    reloc2csv.py
   (3) main
-    run_ph2dt.sh
-    run_hypoDD.sh
-
-2. Usage
+    run_hypoDD.py
+1.2 Usage
   (1) Set parameters
     i/o paths params in config.py
     ph2dt params in ph2dt.inp
     hypoDD params in hypoDD.inp
   (2) run main
-    sh run_ph2dt
-    sh run_hypoDD
-
+    python run_hypoDD.py

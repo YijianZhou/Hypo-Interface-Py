@@ -1,0 +1,36 @@
+HypoDD interface (for large dataset)
+
+1. dt.ct reloc
+1.1 Files
+  (1) config file
+    config.py
+    hypodd.inp
+    ph2dt.inp
+  (2) format transfer
+    mk_sta.py
+    mk_pha.py
+    reloc2csv.py
+  (3) main
+    run_ph2dt.sh
+    run_hypoDD.sh
+1.2 Usage
+  (1) Set parameters
+    i/o paths params in config.py
+    ph2dt params in ph2dt.inp
+    hypoDD params in hypoDD.inp
+  (2) run main
+    sh run_ph2dt
+    sh run_hypoDD
+
+2. dt.cc reloc
+2.1 Input
+  original phase file (det): e.g. xx_pad.pha --> evid & event_name
+  abs loc phase file: xx_pad_hyp.pha --> abs_ot
+  reloc phase file: xx_pha_hyp-ct.pha --> reloc
+  * cut event data with same event_name
+2.2 Usage 
+  (1)sh run_ph2dt_cc.sh
+    check sta_file format & mk_sta.py
+    set path & ph2dt_cc params in config.py
+  (2) sh run_hypoDD.sh
+  set hypoDD params in hypoDD.inp
