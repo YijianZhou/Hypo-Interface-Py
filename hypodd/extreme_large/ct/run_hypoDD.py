@@ -96,10 +96,7 @@ if __name__ == '__main__':
     # 2. run ph2dt
     run_ph2dt()
     # 3. run hypoDD
-    idx_list = []
-    for i in range(num_grids[0]):
-      for j in range(num_grids[1]):
-        idx_list.append((i,j))
+    idx_list = [(i,j) for i in range(num_grids[0]) for j in range(num_grids[1])]
     pool = mp.Pool(num_workers)
     pool.starmap_async(run_hypoDD, idx_list)
     pool.close()
