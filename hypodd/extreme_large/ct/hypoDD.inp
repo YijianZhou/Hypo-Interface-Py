@@ -53,8 +53,7 @@ output/hypoDD.src
 * DAMP:    		damping (for lsqr only) 
 *       ---  CROSS DATA ----- ----CATALOG DATA ----
 * NITER WTCCP WTCCS WRCC WDCC WTCTP WTCTS WRCT WDCT DAMP
-  4     -9    -9    -9   -9     1.0   0.5   6   8  80
-*  4     -9    -9    -9   -9     1.0   0.5   6    6  120
+  4     -9    -9    -9   -9     1.0   0.5   6   5  80
 *
 *--- 1D model:
 * NLAY:		number of model layers  

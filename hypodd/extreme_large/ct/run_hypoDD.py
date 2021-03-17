@@ -1,7 +1,7 @@
-# 1. run ph2dt (ct)
 import os, shutil
 import numpy as np
-import multiprocessing as mp
+import torch.multiprocessing as mp
+from torch.utils.data import Dataset, DataLoader
 from obspy import UTCDateTime
 import config
 
@@ -26,31 +26,50 @@ def read_pha(fpha):
     return pha_dict
 
 
+# write hypoDD input file
+def write_fin(i,j):
+    fout = open('input/hypoDD_%s-%s.inp'%(i,j),'w')
+    f=open('hypoDD.inp'); lines=f.readlines(); f.close()
+    for line in lines:
+        if 'dt.ct' in line: line = 'input/dt_%s-%s.ct \n'%(i,j)
+        if 'event.dat' in line: line = 'input/event_%s-%s.dat \n'%(i,j)
+        if 'hypoDD.reloc' in line: line = 'output/hypoDD_%s-%s.reloc \n'%(i,j)
+        fout.write(line)
+    fout.close()
+
+
 def run_ph2dt():
     for i in range(num_grids[0]):
       for j in range(num_grids[1]):
-        print('-'*40)
         print('run ph2dt: grid %s-%s'%(i,j))
         shutil.copy('input/phase_%s-%s.dat'%(i,j), 'input/phase.dat')
-        os.system('ph2dt ph2dt.inp')
+        os.system('ph2dt ph2dt.inp > output/%s-%s.ph2dt'%(i,j))
         os.system('mv event.sel event.dat dt.ct input')
         os.rename('input/dt.ct','input/dt_%s-%s.ct'%(i,j))
         os.rename('input/event.dat','input/event_%s-%s.dat'%(i,j))
         os.unlink('ph2dt.log')
 
 
-def run_hypoDD(i,j):
-    print('run hypoDD: grid %s-%s'%(i,j))
+class Run_HypoDD(Dataset):
+  """ Dataset for running HypoDD
+  """
+  def __init__(self, idx_list):
+    self.idx_list = idx_list
+
+  def __getitem__(self, index):
     # i/o paths
+    i, j = self.idx_list[index]
     evid_list = evid_lists[i][j]
     out_ctlg = open('output/%s_%s-%s.ctlg'%(ctlg_code, i,j),'w')
     out_pha = open('output/%s_%s-%s.pha'%(ctlg_code, i,j),'w')
     out_pha_full = open('output/%s_%s-%s_full.pha'%(ctlg_code, i,j),'w')
     write_fin(i,j)
     # 3. run hypoDD
-    os.system('hypoDD input/hypoDD_%s-%s.inp'%(i,j))
+    os.system('hypoDD input/hypoDD_%s-%s.inp > output/%s-%s.hypoDD'%(i,j,i,j))
     # 4. format output
-    f=open('output/hypoDD_%s-%s.reloc'%(i,j)); lines=f.readlines(); f.close()
+    freloc = 'output/hypoDD_%s-%s.reloc'%(i,j)
+    if not os.path.exists(freloc): return
+    f=open(freloc); lines=f.readlines(); f.close()
     for line in lines:
         codes = line.split()
         evid = codes[0]
@@ -74,16 +93,8 @@ def run_hypoDD(i,j):
     out_pha.close()
     out_pha_full.close()
 
-
-def write_fin(i,j):
-    fout = open('input/hypoDD_%s-%s.inp'%(i,j),'w')
-    f=open('hypoDD.inp'); lines=f.readlines(); f.close()
-    for line in lines:
-        if 'dt.ct' in line: line = 'input/dt_%s-%s.ct \n'%(i,j)
-        if 'event.dat' in line: line = 'input/event_%s-%s.dat \n'%(i,j)
-        if 'hypoDD.reloc' in line: line = 'output/hypoDD_%s-%s.reloc \n'%(i,j)
-        fout.write(line)
-    fout.close()
+  def __len__(self):
+    return len(self.idx_list)
 
 
 if __name__ == '__main__':
@@ -97,10 +108,10 @@ if __name__ == '__main__':
     run_ph2dt()
     # 3. run hypoDD
     idx_list = [(i,j) for i in range(num_grids[0]) for j in range(num_grids[1])]
-    pool = mp.Pool(num_workers)
-    pool.starmap_async(run_hypoDD, idx_list)
-    pool.close()
-    pool.join()
+    dataset = Run_HypoDD(idx_list)
+    dataloader = DataLoader(dataset, num_workers=num_workers, batch_size=None)
+    for i, _ in enumerate(dataloader):
+        print('run hypoDD: grid {0[0]}-{0[1]}'.format(idx_list[i]))
     os.unlink('hypoDD.log')
     # 4. merge output
     os.system('cat output/%s_*.ctlg > output/%s.ctlg'%(ctlg_code,ctlg_code))
