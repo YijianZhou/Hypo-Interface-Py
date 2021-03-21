@@ -124,7 +124,7 @@ if __name__ == '__main__':
     ctlg_grids = glob.glob('output/%s_*.ctlg'%ctlg_code)
     pha_grids = glob.glob('output/%s_[0-9]*-[0-9]*.pha'%ctlg_code)
     input_files  = glob.glob('input/hypoDD_*.inp')
-    input_files += glob.glob('input/phase_*.inp') 
+    input_files += glob.glob('input/phase_*.dat') 
     input_files += glob.glob('input/event_*.dat') 
     input_files += glob.glob('input/dt_*.ct') 
     if not keep_grids:
