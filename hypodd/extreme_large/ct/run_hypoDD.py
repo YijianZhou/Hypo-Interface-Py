@@ -12,6 +12,8 @@ dep_corr = cfg.dep_corr
 fpha = cfg.fpha_in
 num_grids = cfg.num_grids
 num_workers = cfg.num_workers
+keep_grids = cfg.keep_grids
+
 
 # read fpha with evid
 def read_pha(fpha):
@@ -117,4 +119,16 @@ if __name__ == '__main__':
     os.system('cat output/%s_*.ctlg > output/%s.ctlg'%(ctlg_code,ctlg_code))
     os.system('cat output/%s_*.pha > output/%s.pha'%(ctlg_code,ctlg_code))
     os.system('cat output/%s_*_full.pha > output/%s_full.pha'%(ctlg_code,ctlg_code))
-
+    # delete grid files
+    reloc_grids = glob.glob('output/hypoDD_[0-9]*-[0-9]*.reloc*')
+    ctlg_grids = glob.glob('output/%s_*.ctlg'%ctlg_code)
+    pha_grids = glob.glob('output/%s_[0-9]*-[0-9]*.pha'%ctlg_code)
+    input_files  = glob.glob('input/hypoDD_*.inp')
+    input_files += glob.glob('input/phase_*.inp') 
+    input_files += glob.glob('input/event_*.dat') 
+    input_files += glob.glob('input/dt_*.ct') 
+    if not keep_grids:
+        for reloc_grid in reloc_grids: os.unlink(reloc_grid)
+        for ctlg_grid in ctlg_grids: os.unlink(ctlg_grid)
+        for pha_grid in pha_grids: os.unlink(pha_grid)
+        for input_file in input_files: os.unlink(input_file)
