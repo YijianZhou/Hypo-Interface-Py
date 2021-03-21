@@ -16,4 +16,5 @@ class Config(object):
     self.num_grids = [10,10] # x,y (lon, lat)
     self.xy_pad = [0.06,0.05] # degree
     self.num_workers = 10
+    self.keep_grids = False
 
