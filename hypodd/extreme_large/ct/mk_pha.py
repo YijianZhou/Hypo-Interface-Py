@@ -31,12 +31,12 @@ def get_fout_idx(lat, lon):
     for i in range(num_grids[0]):
       for j in range(num_grids[1]):
         # which phase files to write
-        if lon>lon_min+i*dx-xy_pad[0] and lon<lon_min+(i+1)*dx+xy_pad[0] \
-        and lat>lat_min+j*dy-xy_pad[1] and lat<lat_min+(j+1)*dy+xy_pad[1]: 
+        if lon_min+i*dx-xy_pad[0]<lon<=lon_min+(i+1)*dx+xy_pad[0] \
+        and lat_min+j*dy-xy_pad[1]<lat<=lat_min+(j+1)*dy+xy_pad[1]: 
             fout_idx.append(i*num_grids[1]+j)
         # belong to which grid
-        if lon>lon_min+i*dx and lon<lon_min+(i+1)*dx \
-        and lat>lat_min+j*dy and lat<lat_min+(j+1)*dy:
+        if lon_min+i*dx<lon<=lon_min+(i+1)*dx \
+        and lat>lat_min+j*dy<lat<=lat_min+(j+1)*dy:
             evid_idx = [i,j]
     return evid_idx, fout_idx
 
