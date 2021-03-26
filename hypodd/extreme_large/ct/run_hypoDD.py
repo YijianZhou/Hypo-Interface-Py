@@ -117,7 +117,7 @@ if __name__ == '__main__':
     os.unlink('hypoDD.log')
     # 4. merge output
     os.system('cat output/%s_*.ctlg > output/%s.ctlg'%(ctlg_code,ctlg_code))
-    os.system('cat output/%s_[0-9]-[0-9].pha > output/%s.pha'%(ctlg_code,ctlg_code))
+    os.system('cat output/%s_[0-9]*-*[0-9].pha > output/%s.pha'%(ctlg_code,ctlg_code))
     os.system('cat output/%s_*_full.pha > output/%s_full.pha'%(ctlg_code,ctlg_code))
     # delete grid files
     reloc_grids = glob.glob('output/hypoDD_[0-9]*-[0-9]*.reloc*')
