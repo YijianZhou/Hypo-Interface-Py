@@ -42,6 +42,5 @@ class Config(object):
     self.lat_range = [27.25,28.5]
     self.lon_range = [84.25,86.75]
     self.num_grids = [4,4] # x,y (lon, lat)
-    self.xy_pad = [0.16,0.14] # degree
     self.xy_pad = [0.06,0.05] # degree
     self.keep_grids = False
