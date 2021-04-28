@@ -39,11 +39,11 @@ def get_event_list(fpha_temp, event_root):
         if len(pha_dict_pick)<num_sta_thres: continue
         event_dir = os.path.join(event_root, event_name)
         pha_dict = {}
-        for sta, [tp,ts] in pha_dict_pick.items():
+        for net_sta, [tp,ts] in pha_dict_pick.items():
             # read event stream & check time range
-            st_paths = sorted(glob.glob(os.path.join(event_dir, '*.%s.*'%sta)))
+            st_paths = sorted(glob.glob(os.path.join(event_dir, '%s.*'%net_sta)))
             if len(st_paths)!=3: continue
-            pha_dict[sta] = [st_paths, tp, ts]
+            pha_dict[net_sta] = [st_paths, tp, ts]
         event_list[i] = [evid, event_loc, pha_dict]
     return event_list
 
@@ -92,10 +92,10 @@ def read_fpha_temp(fpha):
             event_loc = [ot, lat, lon, dep, mag]
             event_list.append([evid, event_name, event_loc, {}])
         else:
-            sta = codes[0].split('.')[1]
+            net_sta = codes[0]
             tp = UTCDateTime(codes[1]) if codes[1]!='-1' else -1
             ts = UTCDateTime(codes[2]) if codes[2][:-1]!='-1' else -1
-            event_list[-1][-1][sta] = [tp, ts]
+            event_list[-1][-1][net_sta] = [tp, ts]
     return event_list
 
 
@@ -105,9 +105,8 @@ def read_fsta(fsta):
     sta_dict = {}
     for line in lines:
         net_sta, lat, lon, ele = line.split(',')[0:4]
-        sta = net_sta.split('.')[1]
         lat, lon = float(lat), float(lon)
-        sta_dict[sta] = [lat, lon]
+        sta_dict[net_sta] = [lat, lon]
     return sta_dict
 
 

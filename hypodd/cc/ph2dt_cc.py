@@ -175,7 +175,8 @@ def get_neighbor_pairs(i, loc_sta_list, num_events):
 # write dt.cc
 def write_dt(data_evid, temp_evid, dt_dict, out_dt):
     out_dt.write('# {:9} {:9} 0.0\n'.format(data_evid, temp_evid))
-    for sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
+    for net_sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
+        sta = net_sta.split('.')[1]
         if dt_p: out_dt.write('{:7} {:8.5f} {:.4f} P\n'.format(sta, dt_p, cc_p**0.5))
         if dt_s: out_dt.write('{:7} {:8.5f} {:.4f} S\n'.format(sta, dt_s, cc_s**0.5))
 
