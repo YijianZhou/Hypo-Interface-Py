@@ -1,4 +1,4 @@
-""" Data pipeline (CPU version)
+""" Data pipeline
 """
 import os
 import glob
@@ -104,7 +104,7 @@ def read_fsta(fsta):
     f=open(fsta); lines=f.readlines(); f.close()
     sta_dict = {}
     for line in lines:
-        net_sta, lat, lon, ele = line.split(',')
+        net_sta, lat, lon, ele = line.split(',')[0:4]
         sta = net_sta.split('.')[1]
         lat, lon = float(lat), float(lon)
         sta_dict[sta] = [lat, lon]
@@ -114,7 +114,7 @@ def read_fsta(fsta):
 """ stream processing
 """
 
-def preprocess(stream):
+def preprocess(stream, samp_rate, freq_band):
     # time alignment
     start_time = max([trace.stats.starttime for trace in stream])
     end_time = min([trace.stats.endtime for trace in stream])
@@ -130,11 +130,15 @@ def preprocess(stream):
     if resamp_factor!=1: st = st.interpolate(samp_rate)
     # filter
     st = st.detrend('demean').detrend('linear').taper(max_percentage=0.05, max_length=10.)
-    filter_type, freq_range = freq_band
-    if filter_type=='highpass':
-        return st.filter(filter_type, freq=freq_range)
-    if filter_type=='bandpass':
-        return st.filter(filter_type, freqmin=freq_range[0], freqmax=freq_range[1])
+    freq_min, freq_max = freq_band
+    if freq_min and freq_max:
+        return st.filter('bandpass', freqmin=freq_min, freqmax=freq_max)
+    elif not freq_max and freq_min:
+        return st.filter('highpass', freq=freq_min)
+    elif not freq_min and freq_max:
+        return st.filter('lowpass', freq=freq_max)
+    else:
+        print('filter type not supported!'); return []
 
 
 # read & preprocess stream

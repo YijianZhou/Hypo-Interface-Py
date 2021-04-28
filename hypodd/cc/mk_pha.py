@@ -1,7 +1,7 @@
 """ Make phase file for ph2dt_cc
   event_name --> event data dir
-  hyp pha --> abs_ot
-  hyp ct pha --> reloc
+  loc pha --> abs_ot
+  reloc pha --> lat, lon, dep
 """
 import sys
 sys.path.append('/home/zhouyj/software/data_prep')
@@ -23,8 +23,8 @@ f=open(fpha_name); lines=f.readlines(); f.close()
 evid = 0
 for line in lines:
     codes = line.split(',')
-    if len(codes)!=5: continue
-    event_name = codes[0]
+    if len(codes[0])<10: continue
+    event_name = dtime2str(UTCDateTime(codes[0]))
     event_dict[str(evid)] = event_name
     evid += 1
 

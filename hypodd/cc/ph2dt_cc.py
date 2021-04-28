@@ -3,16 +3,15 @@
 import sys, os, glob
 import time
 import numpy as np
-from numba import jit
 from obspy import read, UTCDateTime
 from dataset_ph2dt_cc import get_event_list, read_fsta, read_data_temp
 import config
 from scipy.signal import correlate
-import warnings
-warnings.filterwarnings("ignore")
 from torch.utils.data import Dataset, DataLoader
 import torch.multiprocessing as mp
 import torch
+import warnings
+warnings.filterwarnings("ignore")
 mp.set_sharing_strategy('file_system')
 
 cfg = config.Config()
@@ -20,8 +19,7 @@ cfg = config.Config()
 fpha_temp = cfg.fpha_temp
 fsta = cfg.fsta_in
 event_root = cfg.event_root
-#out_dt = open(cfg.out_dt,'w')
-out_event = open(cfg.out_event,'w')
+out_dt = open(cfg.out_dt,'w')
 # quality control: event pair linking
 num_workers = cfg.num_workers
 cc_thres = cfg.cc_thres[0] # min cc
@@ -182,26 +180,12 @@ def write_dt(data_evid, temp_evid, dt_dict, out_dt):
         if dt_s: out_dt.write('{:7} {:8.5f} {:.4f} S\n'.format(sta, dt_s, cc_s**0.5))
 
 
-# write event.dat
-def write_event(event_list, out_event):
-    for [evid, event_loc, _] in event_list:
-        ot, lat, lon, dep, mag = event_loc
-        dep += dep_corr
-        date = '{:0>4}{:0>2}{:0>2}'.format(ot.year, ot.month, ot.day)
-        time = '{:0>2}{:0>2}{:0>2}{:0>2}'.format(ot.hour, ot.minute, ot.second, int(ot.microsecond/1e4))
-        loc = '{:7.4f}   {:8.4f}   {:8.3f}  {:4.1f}'.format(lat, lon, dep, mag)
-        err_rms = '   0.00    0.00   0.0'
-        out_event.write('{}  {}   {} {} {:>10}\n'.format(date, time, loc, err_rms, evid))
-
-
 if __name__ == '__main__':
     mp.set_start_method('spawn', force=True) # 'spawn' or 'forkserver'
     # read event data & sta file
     sta_dict = read_fsta(fsta)
     event_list = get_event_list(fpha_temp, event_root)
-    # 1. calc & write dt
+    # calc & write dt
     calc_dt(event_list, sta_dict, out_dt)
     out_dt.close()
-    # 2. write event
-    write_event(event_list, out_event)
-    out_event.close()
+
