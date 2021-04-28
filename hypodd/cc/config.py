@@ -15,7 +15,6 @@ class Config(object):
     self.out_ctlg = 'output/%s.ctlg'%self.ctlg_code
     self.out_pha = 'output/%s.pha'%self.ctlg_code
     self.out_pha_full = 'output/%s_full.pha'%self.ctlg_code
-    self.out_dt = 'input/dt_all.cc'
     # 2. ph2dt_cc
     # input files
     self.event_root = '/data/Example_events'

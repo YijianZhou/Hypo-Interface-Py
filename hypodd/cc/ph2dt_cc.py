@@ -19,7 +19,7 @@ cfg = config.Config()
 fpha_temp = cfg.fpha_temp
 fsta = cfg.fsta_in
 event_root = cfg.event_root
-out_dt = open(cfg.out_dt,'w')
+out_dt = open('input/dt_all.cc','w')
 # quality control: event pair linking
 num_workers = cfg.num_workers
 cc_thres = cfg.cc_thres[0] # min cc
