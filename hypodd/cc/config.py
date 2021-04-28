@@ -37,6 +37,7 @@ class Config(object):
     self.win_temp_p = [0.2,1.3]
     self.win_temp_s = [0.2,1.8]
     # 3. run hypoDD
+    self.hypo_root = '/home/zhouyj/bin'
     self.ot_range = '20150619-20160515'
     self.lat_range = [27.25,28.5]
     self.lon_range = [84.25,86.75]

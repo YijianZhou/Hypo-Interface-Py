@@ -15,6 +15,7 @@ fpha = cfg.fpha_temp
 num_grids = cfg.num_grids
 num_workers = cfg.num_workers
 keep_grids = cfg.keep_grids
+hypo_root = cfg.hypo_root
 
 
 # read fpha with evid
@@ -56,7 +57,7 @@ class Run_HypoDD(Dataset):
     out_pha_full = open('output/%s_%s-%s_full.pha'%(ctlg_code, i,j),'w')
     write_fin(i,j)
     # run hypoDD
-    os.system('hypoDD input/hypoDD_%s-%s.inp > output/%s-%s.hypoDD'%(i,j,i,j))
+    os.system('%s/hypoDD input/hypoDD_%s-%s.inp > output/%s-%s.hypoDD'%(hypo_root,i,j,i,j))
     # format output
     freloc = 'output/hypoDD_%s-%s.reloc'%(i,j)
     if not os.path.exists(freloc): return

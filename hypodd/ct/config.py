@@ -7,6 +7,7 @@ class Config(object):
   def __init__(self):
 
     self.ctlg_code = 'example_ct'
+    self.hypo_root = '/home/zhouyj/bin'
     self.fsta_in = 'input/example.sta'
     self.fsta_out = 'input/station.dat'
     self.fpha_in = 'input/example_full.pha'
