@@ -12,26 +12,28 @@ lat_code = cfg.lat_code
 lon_code = cfg.lon_code
 fsums = glob.glob(cfg.fsums)
 fpha = cfg.fpha_in
-f=open(fpha); pha_lines=f.readlines(); f.close()
 out_ctlg = open(cfg.out_ctlg,'w')
 out_sum = open(cfg.out_sum,'w')
 out_bad = open(cfg.out_bad,'w')
 out_good = open(cfg.out_good,'w')
 out_pha = open(cfg.out_pha,'w')
+out_pha_full = open(cfg.out_pha_full,'w')
 
-def write_csv(fout, line):
+
+def write_csv(fout, line, evid=None):
     codes = line.split()
     date, hrmn, sec = codes[0:3]
     dtime = date + hrmn + sec.zfill(5)
     lat_deg = float(line[20:22])
     lat_min = float(line[23:28])
-    lat = lat_deg + lat_min/60
+    lat = lat_deg + lat_min/60 if lat_code=='N' else -lat_deg - lat_min/60
     lon_deg = float(line[29:32])
     lon_min = float(line[33:38])
-    lon = lon_deg + lon_min/60
+    lon = lon_deg + lon_min/60 if lon_code=='E' else -lon_deg - lon_min/60
     dep = float(line[38:44])
     mag = float(line[48:52]) - mag_corr
-    fout.write('{},{:.4f},{:.4f},{:.1f},{:.1f}\n'.format(dtime, lat, lon, dep+grd_ele, mag))
+    if evid: fout.write('{},{:.4f},{:.4f},{:.1f},{:.1f},{}\n'.format(dtime, lat, lon, dep+grd_ele, mag, evid))
+    else: fout.write('{},{:.4f},{:.4f},{:.1f},{:.1f}\n'.format(dtime, lat, lon, dep+grd_ele, mag))
 
 
 # read sum files
@@ -43,13 +45,14 @@ for fsum in fsums:
     if evid not in sum_dict: sum_dict[evid] = [sum_line]
     else: sum_dict[evid].append(sum_line)
 
-# read PAD pha
+# read PAL pha
 pha_dict = {}
 evid=0
-for pha_line in pha_lines:
-    codes = pha_line.split(',')
-    if len(codes)==5: pha_dict[str(evid)] = []; evid+=1
-    else: pha_dict[str(evid-1)].append(pha_line)
+f=open(fpha); lines=f.readlines(); f.close()
+for line in lines:
+    codes = line.split(',')
+    if len(codes[0])>14: pha_dict[str(evid)] = []; evid+=1
+    else: pha_dict[str(evid-1)].append(line)
 
 
 for evid, sum_lines in sum_dict.items():
@@ -78,11 +81,15 @@ for evid, sum_lines in sum_dict.items():
     write_csv(out_ctlg, sum_list_loc[0]['line'])
     out_sum.write(sum_list_loc[0]['line'])
     write_csv(out_pha, sum_list_loc[0]['line'])
+    write_csv(out_pha_full, sum_list_loc[0]['line'], evid)
     pha_lines = pha_dict[evid]
-    for pha_line in pha_lines: out_pha.write(pha_line)
+    for pha_line in pha_lines: 
+        out_pha.write(pha_line)
+        out_pha_full.write(pha_line)
 
 out_ctlg.close()
 out_sum.close()
 out_bad.close()
 out_good.close()
 out_pha.close()
+out_pha_full.close()

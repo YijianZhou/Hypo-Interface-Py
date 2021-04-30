@@ -73,7 +73,6 @@ def run_hyp(ztr):
     p.communicate(s.encode())
 
 # for all ztr
-#for ztr in ztr_rng: run_hyp(ztr)
 pool = mp.Pool(num_workers)
 pool.map_async(run_hyp, ztr_rng)
 pool.close()
@@ -86,5 +85,5 @@ os.system('python sum2csv.py')
 for fname in glob.glob('fort.*'): os.unlink(fname)
 for fname in glob.glob('input/%s-*.hyp'%ctlg_code): os.unlink(fname)
 if not keep_fsums:
-    for fname in glob.glob(cfg.fsums): os.unlink(fname)
+    for fname in glob.glob(fsums): os.unlink(fname)
 
