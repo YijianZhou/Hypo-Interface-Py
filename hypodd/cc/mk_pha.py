@@ -13,8 +13,8 @@ import config
 # i/o paths
 cfg = config.Config()
 fpha_name = cfg.fpha_name
+fpha_ot = cfg.fpha_ot
 fpha_loc = cfg.fpha_loc
-fpha_reloc = cfg.fpha_reloc
 fout = open(cfg.fpha_temp,'w')
 
 # 1. get evid & event_name
@@ -30,7 +30,7 @@ for line in lines:
 
 # 2. get abs_ot
 ot_dict = {}
-f=open(fpha_loc); lines=f.readlines(); f.close()
+f=open(fpha_ot); lines=f.readlines(); f.close()
 for line in lines:
     codes = line.split(',')
     if len(codes[0])<10: continue
@@ -38,7 +38,7 @@ for line in lines:
     ot_dict[evid] = codes[0]
 
 # 3. get reloc
-f=open(fpha_reloc); lines=f.readlines(); f.close()
+f=open(fpha_loc); lines=f.readlines(); f.close()
 for line in lines:
     codes = line.split(',')
     if len(codes[0])>=10: 

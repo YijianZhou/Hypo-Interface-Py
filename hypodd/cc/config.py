@@ -9,8 +9,8 @@ class Config(object):
     self.fsta_in = 'input/example.sta'
     self.fsta_out = 'input/station.dat'
     self.fpha_name = 'input/example_name.pha'
-    self.fpha_loc = 'input/example_loc.pha'
-    self.fpha_reloc = 'input/example_reloc.pha'
+    self.fpha_ot = 'input/example_hyp.pha'
+    self.fpha_loc = 'input/example_ct.pha'
     self.fpha_temp = 'input/example.temp'
     self.out_ctlg = 'output/%s.ctlg'%self.ctlg_code
     self.out_pha = 'output/%s.pha'%self.ctlg_code
