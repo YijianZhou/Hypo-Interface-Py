@@ -1,4 +1,4 @@
-import os, shutil
+import os, shutil, glob
 import numpy as np
 import torch.multiprocessing as mp
 from torch.utils.data import Dataset, DataLoader
@@ -107,6 +107,7 @@ if __name__ == '__main__':
     os.system('python mk_sta.py')
     os.system('python mk_pha.py')
     evid_lists = np.load('input/evid_lists.npy', allow_pickle=True)
+    if not os.path.exists('output'): os.makedirs('output')
     # 2. run ph2dt
     run_ph2dt()
     # 3. run hypoDD
