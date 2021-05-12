@@ -99,6 +99,7 @@ if __name__ == '__main__':
     os.system('python select_dt.py')
     pha_dict = read_pha(fpha)
     evid_lists = np.load('input/evid_lists.npy', allow_pickle=True)
+    if not os.path.exists('output'): os.makedirs('output')
     # 2. run hypoDD
     idx_list = [(i,j) for i in range(num_grids[0]) for j in range(num_grids[1])]
     dataset = Run_HypoDD(idx_list)
