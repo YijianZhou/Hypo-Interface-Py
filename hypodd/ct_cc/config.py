@@ -6,8 +6,7 @@ class Config(object):
 
     # 1. i/o paths
     self.ctlg_code = 'example_ct-cc'
-    self.fsta_in = 'input/example.sta'
-    self.fsta_out = 'input/station.dat'
+    self.fsta = 'input/example.sta'
     self.fpha_name = 'input/example_name.pha'
     self.fpha_loc = 'input/example_loc.pha'
     self.fpha_temp = 'input/example.temp'

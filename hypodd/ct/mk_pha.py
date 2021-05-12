@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore")
 
 # i/o paths
 cfg = config.Config()
-fpha = cfg.fpha_in
+fpha = cfg.fpha
 dep_corr = cfg.dep_corr
 lat_min, lat_max = cfg.lat_range
 lon_min, lon_max = cfg.lon_range

@@ -8,9 +8,8 @@ class Config(object):
 
     self.ctlg_code = 'example_ct'
     self.hypo_root = '/home/zhouyj/bin'
-    self.fsta_in = 'input/example.sta'
-    self.fsta_out = 'input/station.dat'
-    self.fpha_in = 'input/example_full.pha'
+    self.fsta = 'input/example.sta'
+    self.fpha = 'input/example_full.pha'
     self.dep_corr = 5 # avoid air quake
     self.lat_range = [35.4,36.1]
     self.lon_range = [-117.85,-117.25]
