@@ -17,7 +17,7 @@ mp.set_sharing_strategy('file_system')
 cfg = config.Config()
 # i/o paths
 fpha_temp = cfg.fpha_temp
-fsta = cfg.fsta_in
+fsta = cfg.fsta
 event_root = cfg.event_root
 out_dt = open('input/dt_all.cc','w')
 # quality control: event pair linking
