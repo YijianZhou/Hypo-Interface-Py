@@ -24,6 +24,8 @@ npts_data_s = int(samp_rate*sum(win_data_s))
 npts_temp_p = int(samp_rate*sum(win_temp_p))
 npts_temp_s = int(samp_rate*sum(win_temp_s))
 num_sta_thres = cfg.num_sta_thres[0] # min sta 
+max_sta = cfg.max_sta
+ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 
 
 # get event list (st_paths)
@@ -37,9 +39,13 @@ def get_event_list(fpha_temp, event_root):
     for i, [evid, event_name, event_loc, pha_dict_pick] in enumerate(event_list): 
         if i%2000==0: print('%s events done'%i)
         if len(pha_dict_pick)<num_sta_thres: continue
+        # select station by epi-dist
+        dtype = [('sta','O'),('tp','O'),('ts','O')]
+        picks = np.array([(sta,tp,ts) for sta,[tp,ts] in pha_dict_pick.items()], dtype=dtype)
+        picks = np.sort(picks, order='tp')[0:max_sta]
         event_dir = os.path.join(event_root, event_name)
         pha_dict = {}
-        for net_sta, [tp,ts] in pha_dict_pick.items():
+        for net_sta,tp,ts in picks:
             # read event stream & check time range
             st_paths = sorted(glob.glob(os.path.join(event_dir, '%s.*'%net_sta)))
             if len(st_paths)!=3: continue
@@ -88,10 +94,13 @@ def read_fpha_temp(fpha):
         if len(codes[0])>=10:
             evid, event_name = codes[0].split('_')
             ot = UTCDateTime(codes[1])
+            if ot_min<ot<ot_max: to_add = True
+            else: to_add = False; continue
             lat, lon, dep, mag = [float(code) for code in codes[2:6]]
             event_loc = [ot, lat, lon, dep, mag]
             event_list.append([evid, event_name, event_loc, {}])
         else:
+            if not to_add: continue
             net_sta = codes[0]
             tp = UTCDateTime(codes[1]) if codes[1]!='-1' else -1
             ts = UTCDateTime(codes[2]) if codes[2][:-1]!='-1' else -1

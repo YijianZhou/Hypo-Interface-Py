@@ -17,7 +17,7 @@ mp.set_sharing_strategy('file_system')
 cfg = config.Config()
 # i/o paths
 fpha_temp = cfg.fpha_temp
-fsta = cfg.fsta_in
+fsta = cfg.fsta
 event_root = cfg.event_root
 out_dt = open('input/dt_all.cc','w')
 # quality control: event pair linking
@@ -27,6 +27,7 @@ loc_dev_thres = cfg.loc_dev_thres[0] # max dev loc
 dist_thres = cfg.dist_thres[0] # max epi-dist
 dt_thres = cfg.dt_thres[0] # max dt
 num_sta_thres = cfg.num_sta_thres[0] # min sta
+temp_mag = cfg.temp_mag
 # data info
 samp_rate = cfg.samp_rate
 win_data_p = cfg.win_data_p
@@ -43,9 +44,14 @@ def calc_dt(event_list, sta_dict, out_dt):
     # 1. get_neighbor_pairs
     print('get candidate pair_list (select by loc)')
     num_events = len(event_list)
-    dtype = [('lat','O'),('lon','O'),('sta','O')]
-    loc_sta_list =  np.array([(event_loc[1], event_loc[2], list(pha_dict.keys())) \
-        for _,event_loc,pha_dict in event_list], dtype=dtype)
+    dtype = [('lat','O'),('lon','O'),('is_temp','O'),('sta','O')]
+    loc_sta_list = []
+    for _, event_loc, pha_dict in event_list:
+        sta = list(pha_dict.keys())
+        lat, lon, _, mag = event_loc[1:5]
+        is_temp = 1 if mag>=temp_mag else 0
+        loc_sta_list.append((lat, lon, is_temp, sta))
+    loc_sta_list = np.array(loc_sta_list, dtype=dtype)
     t = time.time()
     args = [(i, loc_sta_list, num_events) for i in range(num_events-1)]
     pool = mp.Pool(num_workers)
@@ -160,16 +166,18 @@ def calc_dist(lat, lon):
 
 def get_neighbor_pairs(i, loc_sta_list, num_events):
     # 1. select by loc dev
-    cos_lat = np.cos(loc_sta_list[i]['lat']*np.pi/180)
-    cond_lat = 111*abs(loc_sta_list[i+1:]['lat']-loc_sta_list[i]['lat']) < loc_dev_thres
-    cond_lon = 111*abs(loc_sta_list[i+1:]['lon']-loc_sta_list[i]['lon'])*cos_lat < loc_dev_thres
+    lat, lon, is_temp, sta_ref = loc_sta_list[i]
+    cos_lat = np.cos(lat*np.pi/180)
+    cond_lat = 111*abs(loc_sta_list[i+1:]['lat']-lat) < loc_dev_thres
+    cond_lon = 111*abs(loc_sta_list[i+1:]['lon']-lon)*cos_lat < loc_dev_thres
+    if is_temp==0: cond_loc = (loc_sta_list[i+1:]['is_temp']==1)*cond_lat*cond_lon
+    else: cond_loc = cond_lat*cond_lon
     # 2. select by shared sta
-    sta_ref = loc_sta_list[i]['sta']
-    sta_lists = loc_sta_list[i+1:][cond_lat*cond_lon]['sta']
+    sta_lists = loc_sta_list[i+1:][cond_loc]['sta']
     sta_cond = [j for j in range(len(sta_lists)) \
         if len(np.intersect1d(sta_lists[j],sta_ref))>=num_sta_thres]
     sum_row = sum(np.arange(num_events-1,0,-1)[0:i]) if i>0 else 0
-    return sum_row + np.where(cond_lat*cond_lon==1)[0][sta_cond]
+    return sum_row + np.where(cond_loc==1)[0][sta_cond]
 
 
 # write dt.cc
