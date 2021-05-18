@@ -35,6 +35,8 @@ class Config(object):
     self.win_data_s = [1.,3.]
     self.win_temp_p = [0.2,1.3]
     self.win_temp_s = [0.2,1.8]
+    self.temp_mag = 0.5
+    self.max_sta = 15
     # 3. run hypoDD
     self.hypo_root = '/home/zhouyj/bin'
     self.ot_range = '20150619-20160515'
