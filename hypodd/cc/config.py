@@ -22,6 +22,7 @@ class Config(object):
     # thres for event pair linking
     self.cc_thres = [0.3, 0.3] # CC thres for event pair
     self.loc_dev_thres = [3, 3] # km, maximum location separation
+    self.dep_dev_thres = [4, 4] # km, maximum location separation
     self.dist_thres = [150, 150] # km, max epicentral dist
     self.dt_thres = [[1.,1.8], [1,1.8]]
     self.num_sta_thres = [4,4]
@@ -36,6 +37,7 @@ class Config(object):
     self.win_temp_p = [0.2,1.3]
     self.win_temp_s = [0.2,1.8]
     self.temp_mag = 0.5
+    self.temp_sta = 5
     self.max_sta = 15
     # 3. run hypoDD
     self.hypo_root = '/home/zhouyj/bin'
