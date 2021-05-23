@@ -24,10 +24,12 @@ out_dt = open('input/dt_all.cc','w')
 num_workers = cfg.num_workers
 cc_thres = cfg.cc_thres[0] # min cc
 loc_dev_thres = cfg.loc_dev_thres[0] # max dev loc
+dep_dev_thres = cfg.dep_dev_thres[0] # max dev loc
 dist_thres = cfg.dist_thres[0] # max epi-dist
 dt_thres = cfg.dt_thres[0] # max dt
 num_sta_thres = cfg.num_sta_thres[0] # min sta
 temp_mag = cfg.temp_mag
+temp_sta = cfg.temp_sta
 # data info
 samp_rate = cfg.samp_rate
 win_data_p = cfg.win_data_p
@@ -44,13 +46,13 @@ def calc_dt(event_list, sta_dict, out_dt):
     # 1. get_neighbor_pairs
     print('get candidate pair_list (select by loc)')
     num_events = len(event_list)
-    dtype = [('lat','O'),('lon','O'),('is_temp','O'),('sta','O')]
+    dtype = [('lat','O'),('lon','O'),('dep','O'),('is_temp','O'),('sta','O')]
     loc_sta_list = []
     for _, event_loc, pha_dict in event_list:
         sta = list(pha_dict.keys())
-        lat, lon, _, mag = event_loc[1:5]
-        is_temp = 1 if mag>=temp_mag else 0
-        loc_sta_list.append((lat, lon, is_temp, sta))
+        lat, lon, dep, mag = event_loc[1:5]
+        is_temp = 1 if mag>=temp_mag and len(sta)>=temp_sta else 0
+        loc_sta_list.append((lat, lon, dep, is_temp, sta))
     loc_sta_list = np.array(loc_sta_list, dtype=dtype)
     t = time.time()
     args = [(i, loc_sta_list, num_events) for i in range(num_events-1)]
@@ -166,12 +168,13 @@ def calc_dist(lat, lon):
 
 def get_neighbor_pairs(i, loc_sta_list, num_events):
     # 1. select by loc dev
-    lat, lon, is_temp, sta_ref = loc_sta_list[i]
+    lat, lon, dep, is_temp, sta_ref = loc_sta_list[i]
     cos_lat = np.cos(lat*np.pi/180)
     cond_lat = 111*abs(loc_sta_list[i+1:]['lat']-lat) < loc_dev_thres
     cond_lon = 111*abs(loc_sta_list[i+1:]['lon']-lon)*cos_lat < loc_dev_thres
-    if is_temp==0: cond_loc = (loc_sta_list[i+1:]['is_temp']==1)*cond_lat*cond_lon
-    else: cond_loc = cond_lat*cond_lon
+    cond_dep = abs(loc_sta_list[i+1:]['dep']-dep) < dep_dev_thres
+    if is_temp==1: cond_loc = cond_lat*cond_lon*cond_dep
+    else: cond_loc = (loc_sta_list[i+1:]['is_temp']==1)*cond_lat*cond_lon*cond_dep
     # 2. select by shared sta
     sta_lists = loc_sta_list[i+1:][cond_loc]['sta']
     sta_cond = [j for j in range(len(sta_lists)) \
