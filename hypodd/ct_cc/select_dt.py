@@ -12,6 +12,7 @@ fsta = cfg.fsta
 # thres for linking event pairs
 cc_thres = cfg.cc_thres[1]
 loc_dev_thres = cfg.loc_dev_thres[1]
+dep_dev_thres = cfg.dep_dev_thres[1]
 dist_thres = cfg.dist_thres[1]
 dt_thres = cfg.dt_thres[1]
 num_sta_thres = cfg.num_sta_thres[1]
@@ -44,8 +45,8 @@ for line in lines:
     codes = line.split(',')
     if len(codes[0])<10: continue
     evid = codes[0].split('_')[0]
-    lat, lon = [float(code) for code in codes[2:4]]
-    event_dict[evid] = [lat, lon]
+    lat, lon, dep = [float(code) for code in codes[2:5]]
+    event_dict[evid] = [lat, lon, dep]
 
 
 # read dt.cc
@@ -60,11 +61,13 @@ for i,line in enumerate(lines):
         data_id, temp_id = codes[1:3]
         if data_id not in event_dict or temp_id not in event_dict: 
             to_add = False; continue
-        data_lat, data_lon = event_dict[data_id][0:2]
-        temp_lat, temp_lon = event_dict[temp_id][0:2]
+        data_lat, data_lon, data_dep = event_dict[data_id]
+        temp_lat, temp_lon, temp_dep = event_dict[temp_id]
         # 1. select loc dev
         loc_dev = calc_dist([data_lat,temp_lat], [data_lon,temp_lon])
-        if loc_dev>loc_dev_thres: to_add = False; continue
+        dep_dev = abs(data_dep - temp_dep)
+        if not (loc_dev<loc_dev_thres and dep_dev<dep_dev_thres):
+            to_add = False; continue
         dt_list.append([[data_id, temp_id], line, []])
     else:
         if not to_add: continue
