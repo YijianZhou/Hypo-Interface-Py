@@ -49,7 +49,6 @@ def run_ph2dt():
         os.system('%s/ph2dt ph2dt.inp > output/%s-%s.ph2dt'%(hypo_root,i,j))
         os.system('mv event.sel event.dat dt.ct input')
         os.rename('input/dt.ct','input/dt_%s-%s.ct'%(i,j))
-        os.rename('input/event.dat','input/event_%s-%s.dat'%(i,j))
         os.unlink('ph2dt.log')
 
 
@@ -103,10 +102,11 @@ class Run_HypoDD(Dataset):
 if __name__ == '__main__':
     # 1. run ph2dt
     print('run ph2dt')
-    os.system('python mk_sta.py')
-    os.system('python mk_pha.py')
-    os.system('python ph2dt_cc.py')
-    os.system('python select_dt.py')
+    #os.system('python mk_sta.py')
+    #os.system('python mk_pha.py')
+    #os.system('python mk_event.py')
+    #os.system('python ph2dt_cc.py')
+    #os.system('python select_dt.py')
     pha_dict = read_pha(fpha)
     evid_lists = np.load('input/evid_lists.npy', allow_pickle=True)
     if not os.path.exists('output'): os.makedirs('output')
@@ -127,9 +127,9 @@ if __name__ == '__main__':
     ctlg_grids = glob.glob('output/%s_*.ctlg'%ctlg_code)
     pha_grids = glob.glob('output/%s_[0-9]*-[0-9]*.pha'%ctlg_code)
     input_files  = glob.glob('input/hypoDD_*.inp')
-    input_files += glob.glob('input/phase_*.dat')
-    input_files += glob.glob('input/event_*.dat') 
-    input_files += glob.glob('input/dt_*.ct')
+#    input_files += glob.glob('input/phase_*.dat')
+#    input_files += glob.glob('input/event_*.dat') 
+#    input_files += glob.glob('input/dt_*.ct')
     if not keep_grids:
         for reloc_grid in reloc_grids: os.unlink(reloc_grid)
         for ctlg_grid in ctlg_grids: os.unlink(ctlg_grid)
