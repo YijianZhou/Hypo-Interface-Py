@@ -8,7 +8,7 @@ cfg = config.Config()
 fdt_in = 'input/dt_all.cc'
 fdt_out = open('input/dt.cc','w')
 fpha = cfg.fpha_temp
-fsta = cfg.fsta_in
+fsta = cfg.fsta
 # thres for linking event pairs
 cc_thres = cfg.cc_thres[1]
 loc_dev_thres = cfg.loc_dev_thres[1]
