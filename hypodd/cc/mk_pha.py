@@ -16,6 +16,9 @@ fpha_name = cfg.fpha_name
 fpha_ot = cfg.fpha_ot
 fpha_loc = cfg.fpha_loc
 fout = open(cfg.fpha_temp,'w')
+ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
+lat_min, lat_max = cfg.lat_range
+lon_min, lon_max = cfg.lon_range
 
 # 1. get evid & event_name
 event_dict = {}
@@ -35,7 +38,7 @@ for line in lines:
     codes = line.split(',')
     if len(codes[0])<10: continue
     evid = codes[-1][:-1]
-    ot_dict[evid] = codes[0]
+    ot_dict[evid] = UTCDateTime(codes[0])
 
 # 3. get reloc
 f=open(fpha_loc); lines=f.readlines(); f.close()
@@ -46,7 +49,10 @@ for line in lines:
         event_name = event_dict[evid]
         id_name = '%s_%s'%(evid, event_name)
         ot = ot_dict[evid]
-        lat, lon, dep, mag = codes[1:5]
+        lat, lon, dep, mag = [float(code) for code in codes[1:5]]
+        if lat_min<lat<lat_max and lon_min<lon<lon_max and ot_min<ot<ot_max: to_add=True
+        else: to_add = False; continue
         fout.write('{},{},{},{},{},{}\n'.format(id_name,ot,lat,lon,dep,mag))
-    else: fout.write(line)
+    else: 
+        if to_add: fout.write(line)
 fout.close()
