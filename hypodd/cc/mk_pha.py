@@ -19,6 +19,11 @@ fout = open(cfg.fpha_temp,'w')
 ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 lat_min, lat_max = cfg.lat_range
 lon_min, lon_max = cfg.lon_range
+xy_pad = cfg.xy_pad
+lon_min -= xy_pad[0]
+lon_max += xy_pad[0]
+lat_min -= xy_pad[1]
+lat_max += xy_pad[1]
 
 # 1. get evid & event_name
 event_dict = {}
@@ -50,7 +55,7 @@ for line in lines:
         id_name = '%s_%s'%(evid, event_name)
         ot = ot_dict[evid]
         lat, lon, dep, mag = [float(code) for code in codes[1:5]]
-        if lat_min<lat<lat_max and lon_min<lon<lon_max and ot_min<ot<ot_max: to_add=True
+        if lat_min<=lat<=lat_max and lon_min<=lon<=lon_max and ot_min<=ot<=ot_max: to_add=True
         else: to_add = False; continue
         fout.write('{},{},{},{},{},{}\n'.format(id_name,ot,lat,lon,dep,mag))
     else: 
