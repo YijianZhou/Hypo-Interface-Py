@@ -15,6 +15,11 @@ fout = open(cfg.fpha_temp,'w')
 ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 lat_min, lat_max = cfg.lat_range
 lon_min, lon_max = cfg.lon_range
+xy_pad = cfg.xy_pad
+lon_min -= xy_pad[0]
+lon_max += xy_pad[0]
+lat_min -= xy_pad[1]
+lat_max += xy_pad[1]
 
 # 1. get evid & event_name
 event_dict = {}
