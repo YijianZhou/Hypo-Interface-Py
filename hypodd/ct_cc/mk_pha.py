@@ -42,7 +42,7 @@ for line in lines:
         id_name = '%s_%s'%(evid, event_name)
         ot = UTCDateTime(codes[0])
         lat, lon, dep, mag = [float(code) for code in codes[1:5]]
-        if lat_min<lat<lat_max and lon_min<lon<lon_max and ot_min<ot<ot_max: to_add=True
+        if lat_min<=lat<=lat_max and lon_min<=lon<=lon_max and ot_min<=ot<=ot_max: to_add=True
         else: to_add = False; continue
         fout.write('{},{},{},{},{},{}\n'.format(id_name,ot,lat,lon,dep,mag))
     else: 
