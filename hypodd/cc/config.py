@@ -26,6 +26,7 @@ class Config(object):
     self.dist_thres = [150, 150] # km, max epicentral dist
     self.dt_thres = [[1.,1.8], [1,1.8]]
     self.num_sta_thres = [4,4]
+    self.max_nbr = 200
     # data preprocess
     self.to_prep = False
     self.freq_band = [1.,40.]

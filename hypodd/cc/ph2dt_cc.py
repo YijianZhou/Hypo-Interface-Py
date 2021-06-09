@@ -30,6 +30,7 @@ dt_thres = cfg.dt_thres[0] # max dt
 num_sta_thres = cfg.num_sta_thres[0] # min sta
 temp_mag = cfg.temp_mag
 temp_sta = cfg.temp_sta
+max_nbr = cfg.max_nbr
 # data info
 samp_rate = cfg.samp_rate
 win_data_p = cfg.win_data_p
@@ -44,7 +45,7 @@ dep_corr = cfg.dep_corr
 # calc differential travel time for all event pairs
 def calc_dt(event_list, sta_dict, out_dt):
     # 1. get_neighbor_pairs
-    print('get candidate pair_list (select by loc)')
+    print('1. get candidate event pairs')
     num_events = len(event_list)
     dtype = [('lat','O'),('lon','O'),('dep','O'),('is_temp','O'),('sta','O')]
     loc_sta_list = []
@@ -54,23 +55,18 @@ def calc_dt(event_list, sta_dict, out_dt):
         is_temp = 1 if mag>=temp_mag and len(sta)>=temp_sta else 0
         loc_sta_list.append((lat, lon, dep, is_temp, sta))
     loc_sta_list = np.array(loc_sta_list, dtype=dtype)
+    nbr_dataset = Get_Neighbor(loc_sta_list)
+    nbr_loader = DataLoader(nbr_dataset, num_workers=num_workers, batch_size=None)
     t = time.time()
-    args = [(i, loc_sta_list, num_events) for i in range(num_events-1)]
-    pool = mp.Pool(num_workers)
-    out = pool.starmap_async(get_neighbor_pairs, args, chunksize=1)
-    pool.close()
-    while True:
-        if out.ready(): break
-        num_done = num_events-1 - out._number_left
-        print('done/total {}/{} | time {:.1f}s'.format(num_done, num_events-1, time.time()-t))
-        time.sleep(10)
-    pool.join()
-    pair_list = np.concatenate([pair_i for pair_i in out.get()])
+    pair_list = np.array([], dtype=np.int)
+    for i, pair_i in enumerate(nbr_loader):
+        if i%1000==0: print('done/total events {}/{} | {:.1f}s'.format(i, len(loc_sta_list), time.time()-t))
+        pair_list = np.concatenate([pair_list, pair_i.numpy()])
+    pair_list = np.unique(pair_list)
     num_pairs = len(pair_list)
     print('%s pairs linked'%num_pairs)
-
     # 2. calc dt
-    print('calculating differential travel time (dt.cc)')
+    print('2. calculate differential travel time (dt.cc)')
     dt_dataset = Diff_TT(event_list, pair_list, sta_dict)
     dt_loader = DataLoader(dt_dataset, num_workers=num_workers, batch_size=None)
     link_num = 0
@@ -80,6 +76,48 @@ def calc_dt(event_list, sta_dict, out_dt):
         if len(dt_dict)<num_sta_thres: continue
         write_dt(data_evid, temp_evid, dt_dict, out_dt)
         link_num += 1
+
+
+class Get_Neighbor(Dataset):
+  """Dataset for finding neighbor event
+  """
+  def __init__(self, loc_sta_list):
+    self.loc_sta_list = loc_sta_list
+
+  def __getitem__(self, index):
+    num_events = len(self.loc_sta_list)
+    # 1. select by loc dev
+    lat, lon, dep, is_temp, sta_ref = self.loc_sta_list[index]
+    cos_lat = np.cos(lat*np.pi/180)
+    cond_lat = 111*abs(self.loc_sta_list['lat']-lat) < loc_dev_thres
+    cond_lon = 111*abs(self.loc_sta_list['lon']-lon)*cos_lat < loc_dev_thres
+    cond_dep = abs(self.loc_sta_list['dep']-dep) < dep_dev_thres
+    if is_temp==1: cond_loc = cond_lat*cond_lon*cond_dep
+    else: cond_loc = (self.loc_sta_list['is_temp']==1)*cond_lat*cond_lon*cond_dep
+    # 2. select by shared sta
+    sta_lists = self.loc_sta_list[cond_loc]['sta']
+    cond_sta = [len(np.intersect1d(sta_list, sta_ref)) >= num_sta_thres for sta_list in sta_lists]
+    # 3. select to maximum num of neighbor
+    sub_list = self.loc_sta_list[cond_loc][cond_sta]
+    if len(sub_list)==0: return np.array([], dtype=np.int)
+    dist_lat = 111*abs(sub_list['lat']-lat)
+    dist_lon = 111*abs(sub_list['lon']-lon)*cos_lat
+    dist_dep = abs(sub_list['dep']-dep)
+    dist_list = (dist_lat**2 + dist_lon**2 + dist_dep**2)**0.5
+    dist_thres = np.sort(dist_list)[0:max_nbr+1][-1]
+    cond_nbr = dist_list<=dist_thres
+    # 4. to pair index
+    pair_list = []
+    evid_list = np.arange(num_events)[cond_loc][cond_sta][cond_nbr]
+    for evid in evid_list:
+        if evid==index: continue
+        evid1, evid2 = np.sort([evid, index])
+        sum_row = sum(np.arange(num_events-1,0,-1)[0:evid1])
+        pair_list.append(sum_row + evid2 - evid1 - 1)
+    return np.array(pair_list, dtype=np.int)
+
+  def __len__(self):
+    return len(self.loc_sta_list)
 
 
 class Diff_TT(Dataset):
@@ -104,7 +142,6 @@ class Diff_TT(Dataset):
     # check loc dev, num sta
     sta_list = [sta for sta in pha_dict_data.keys() if sta in pha_dict_temp.keys()]
     if len(sta_list)<num_sta_thres: return [data_evid, temp_evid], {}
-
     # for all shared sta pha
     dt_dict = {}
     for sta in sta_list:
@@ -166,24 +203,6 @@ def calc_dist(lat, lon):
     return 111*(dx**2 + dy**2)**0.5
 
 
-def get_neighbor_pairs(i, loc_sta_list, num_events):
-    # 1. select by loc dev
-    lat, lon, dep, is_temp, sta_ref = loc_sta_list[i]
-    cos_lat = np.cos(lat*np.pi/180)
-    cond_lat = 111*abs(loc_sta_list[i+1:]['lat']-lat) < loc_dev_thres
-    cond_lon = 111*abs(loc_sta_list[i+1:]['lon']-lon)*cos_lat < loc_dev_thres
-    cond_dep = abs(loc_sta_list[i+1:]['dep']-dep) < dep_dev_thres
-    if is_temp==1: cond_loc = cond_lat*cond_lon*cond_dep
-    else: cond_loc = (loc_sta_list[i+1:]['is_temp']==1)*cond_lat*cond_lon*cond_dep
-    # 2. select by shared sta
-    sta_lists = loc_sta_list[i+1:][cond_loc]['sta']
-    sta_cond = [j for j in range(len(sta_lists)) \
-        if len(np.intersect1d(sta_lists[j],sta_ref))>=num_sta_thres]
-    sum_row = sum(np.arange(num_events-1,0,-1)[0:i]) if i>0 else 0
-    return sum_row + np.where(cond_loc==1)[0][sta_cond]
-
-
-# write dt.cc
 def write_dt(data_evid, temp_evid, dt_dict, out_dt):
     out_dt.write('# {:9} {:9} 0.0\n'.format(data_evid, temp_evid))
     for net_sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
