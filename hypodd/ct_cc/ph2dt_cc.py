@@ -58,11 +58,11 @@ def calc_dt(event_list, sta_dict, out_dt):
     nbr_dataset = Get_Neighbor(loc_sta_list)
     nbr_loader = DataLoader(nbr_dataset, num_workers=num_workers, batch_size=None)
     t = time.time()
-    pair_list = np.array([], dtype=np.int)
+    pair_list = []
     for i, pair_i in enumerate(nbr_loader):
         if i%1000==0: print('done/total events {}/{} | {:.1f}s'.format(i, len(loc_sta_list), time.time()-t))
-        pair_list = np.concatenate([pair_list, pair_i.numpy()])
-    pair_list = np.unique(pair_list)
+        pair_list += list(pair_i.numpy())
+    pair_list = np.unique(pair_list, axis=0)
     num_pairs = len(pair_list)
     print('%s pairs linked'%num_pairs)
     # 2. calc dt
@@ -112,8 +112,7 @@ class Get_Neighbor(Dataset):
     for evid in evid_list:
         if evid==index: continue
         evid1, evid2 = np.sort([evid, index])
-        sum_row = sum(np.arange(num_events-1,0,-1)[0:evid1])
-        pair_list.append(sum_row + evid2 - evid1 - 1)
+        pair_list.append([evid1, evid2])
     return np.array(pair_list, dtype=np.int)
 
   def __len__(self):
@@ -126,15 +125,11 @@ class Diff_TT(Dataset):
   def __init__(self, event_list, pair_list, sta_dict):
     self.event_list = event_list
     self.pair_list = pair_list
-    self.num_events = len(event_list)
     self.sta_dict = sta_dict
-    self.cum_num_rows = np.cumsum(np.arange(self.num_events-1,0,-1))
 
   def __getitem__(self, index):
     # calc one event pair
-    pair_idx = self.pair_list[index]
-    data_idx = np.where(pair_idx+1<=self.cum_num_rows)[0][0]
-    temp_idx = (pair_idx+1-self.cum_num_rows[data_idx-1]) + data_idx if data_idx>0 else pair_idx+1
+    data_idx, temp_idx = self.pair_list[index]
     data_evid, data_loc, pha_dict_data = self.event_list[data_idx]
     temp_evid, temp_loc, pha_dict_temp = self.event_list[temp_idx]
     data_ot, data_lat, data_lon = data_loc[0:3]
