@@ -36,9 +36,10 @@ def get_event_list(fpha_temp, event_root):
     num_events = len(event_list)
     # 2. get stream paths
     print('getting event data paths:')
+    bad_list = []
     for i, [evid, event_name, event_loc, pha_dict_pick] in enumerate(event_list): 
         if i%2000==0: print('%s events done'%i)
-        if len(pha_dict_pick)<num_sta_thres: continue
+        if len(pha_dict_pick)<num_sta_thres: bad_list.append(i); continue
         # select station by epi-dist
         dtype = [('sta','O'),('tp','O'),('ts','O')]
         picks = np.array([(sta,tp,ts) for sta,[tp,ts] in pha_dict_pick.items()], dtype=dtype)
@@ -51,7 +52,7 @@ def get_event_list(fpha_temp, event_root):
             if len(st_paths)!=3: continue
             pha_dict[net_sta] = [st_paths, tp, ts]
         event_list[i] = [evid, event_loc, pha_dict]
-    return event_list
+    return np.delete(event_list, bad_list)
 
 
 # read event data as data & temp
