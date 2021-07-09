@@ -4,11 +4,11 @@ import config
 
 # i/o paths
 cfg = config.Config()
-fsta = cfg.fsta_in 
-fout = open(cfg.fsta_out,'w')
+fsta = cfg.fsta_in
+fout = open(cfg.fsta_out, 'w')
 lat_code = cfg.lat_code
 lon_code = cfg.lon_code
-f=open(fsta); lines=f.readlines(); f.close()
+f = open(fsta); lines=f.readlines(); f.close()
 
 for line in lines:
     net_sta, lat, lon, ele = line.split(',')[0:4]

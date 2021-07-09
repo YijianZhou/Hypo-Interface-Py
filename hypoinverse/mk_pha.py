@@ -6,9 +6,9 @@ import config
 
 # i/o paths
 cfg = config.Config()
-fpha = cfg.fpha_in 
-f=open(fpha); lines =f.readlines(); f.close()
-fout = open(cfg.fpha_out,'w')
+fpha = cfg.fpha_in
+f = open(fpha); lines =f.readlines(); f.close()
+fout = open(cfg.fpha_out, 'w')
 lat_code = cfg.lat_code
 lon_code = cfg.lon_code
 mag_corr = cfg.mag_corr # hypoInv do not support neg mag
@@ -21,9 +21,9 @@ def split_datetime(dtime):
     return date, time
 
 evid = 0
-for i,line in enumerate(lines):
+for i, line in enumerate(lines):
   codes = line.split(',')
-  if len(codes[0])>10:
+  if len(codes[0]) > 10:
     # write head line
     ot, lat, lon, _, mag, _ = codes
     ot = UTCDateTime(ot)
@@ -37,7 +37,7 @@ for i,line in enumerate(lines):
     lat_min = int(100*60*(lat-int(lat)))
     lat = '{:0>2}{}{:0>4}'.format(lat_deg, lat_code, lat_min)
     lon = '{:0>3}{}{:0>4}'.format(lon_deg, lon_code, lon_min)
-    if i!=0: fout.write('\n')
+    if i != 0: fout.write('\n')
     fout.write('{}{}{} {}L{:3.2f}{}{:>10}L\n'\
         .format(date+time, lat, lon, ' '*90, mag, ' '*9, evid))
     evid += 1
@@ -45,14 +45,14 @@ for i,line in enumerate(lines):
     # write sta line
     net_sta, tp, ts = codes[0:3]
     net, sta = net_sta.split('.')
-    tp = UTCDateTime(tp) if tp!='-1' else -1
-    ts = UTCDateTime(ts) if ts[:-1]!='-1' else -1
-    date = split_datetime(tp)[0] if tp!=-1 else split_datetime(ts)[0]
-    hhmm = split_datetime(tp)[1][0:4] if tp!=-1 else split_datetime(ts)[1][0:4]
-    tp_sec = split_datetime(tp)[1][4:] if tp!=-1 else ' '*4
-    ts_sec = int(100*(ts - UTCDateTime(date + hhmm))) if ts!=-1 else ' '*4
+    tp = UTCDateTime(tp) if tp != '-1' else -1
+    ts = UTCDateTime(ts) if ts[:-1] != '-1' else -1
+    date = split_datetime(tp)[0] if tp != -1 else split_datetime(ts)[0]
+    hhmm = split_datetime(tp)[1][0:4] if tp != -1 else split_datetime(ts)[1][0:4]
+    tp_sec = split_datetime(tp)[1][4:] if tp != -1 else ' '*4
+    ts_sec = int(100*(ts - UTCDateTime(date + hhmm))) if ts != -1 else ' '*4
     tp_code = 'IP {}{} {}'.format(p_wht, date+hhmm, tp_sec)
     ts_code = '{:4}ES {}'.format(ts_sec, s_wht)
-    fout.write('{:<5}{}  HHZ {}{} {} \n'.format(sta, net, tp_code,' '*7, ts_code))
+    fout.write('{:<5}{}  HHZ {}{} {} \n'.format(sta, net, tp_code, ' '*7, ts_code))
 fout.write('\n')
 fout.close()
