@@ -123,7 +123,7 @@ def read_fsta(fsta):
 """ stream processing
 """
 
-def preprocess(stream, samp_rate, freq_band):
+def preprocess(stream):
     # time alignment
     start_time = max([trace.stats.starttime for trace in stream])
     end_time = min([trace.stats.endtime for trace in stream])
