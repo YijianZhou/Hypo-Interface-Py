@@ -9,8 +9,8 @@ warnings.filterwarnings("ignore")
 
 # i/o paths
 cfg = config.Config()
-fpha = cfg.fpha
 dep_corr = cfg.dep_corr
+ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 lat_min, lat_max = cfg.lat_range
 lon_min, lon_max = cfg.lon_range
 num_grids = cfg.num_grids
@@ -36,29 +36,32 @@ def get_fout_idx(lat, lon):
             fout_idx.append(i*num_grids[1]+j)
         # belong to which grid
         if lon_min+i*dx<lon<=lon_min+(i+1)*dx \
-        and lat>lat_min+j*dy<lat<=lat_min+(j+1)*dy:
+        and lat_min+j*dy<lat<=lat_min+(j+1)*dy:
             evid_idx = [i,j]
     return evid_idx, fout_idx
 
-f=open(fpha); lines=f.readlines(); f.close()
+f=open(cfg.fpha); lines=f.readlines(); f.close()
 for line in lines:
   codes = line.split(',')
   if len(codes[0])>=14:
     # write head line
     ot = UTCDateTime(codes[0])
     lat, lon, dep, mag = [float(code) for code in codes[1:5]]
+    dep += dep_corr
     evid = int(codes[-1])
     evid_idx, fout_idx = get_fout_idx(lat, lon)
     if len(evid_idx)!=0: evid_lists[evid_idx[0]][evid_idx[1]].append(evid)
     if len(fout_idx)==0: continue
+    if not ot_min<ot<ot_max: continue
     # format time info
     date = '{:4} {:2} {:2}'.format(ot.year, ot.month, ot.day)
     time = '{:2} {:2} {:5.2f}'.format(ot.hour, ot.minute, ot.second + ot.microsecond/1e6)
     # format loc info
-    loc = '{:7.4f} {:9.4f}  {:6.2f} {:4.2f}'.format(lat, lon, dep+dep_corr, mag)
+    loc = '{:7.4f} {:9.4f}  {:6.2f} {:4.2f}'.format(lat, lon, dep, mag)
     for idx in fout_idx: fouts[idx].write('# {} {}  {}  0.00  0.00  0.00  {:>9}\n'.format(date, time, loc, evid))
   else:
     if len(fout_idx)==0: continue
+    if not ot_min<ot<ot_max: continue
     # write sta pick lines
     sta = codes[0].split('.')[1]
     wp, ws = 1., 1.

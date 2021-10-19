@@ -9,7 +9,6 @@ import config
 cfg = config.Config()
 ctlg_code = cfg.ctlg_code
 dep_corr = cfg.dep_corr
-fpha = cfg.fpha_in
 num_grids = cfg.num_grids
 num_workers = cfg.num_workers
 keep_grids = cfg.keep_grids
@@ -17,9 +16,9 @@ hypo_root = cfg.hypo_root
 
 
 # read fpha with evid
-def read_pha(fpha):
+def read_fpha():
     pha_dict = {}
-    f=open(fpha); lines=f.readlines(); f.close()
+    f=open(cfg.fpha); lines=f.readlines(); f.close()
     for line in lines:
         codes = line.split(',')
         if len(codes[0])>=14:
@@ -67,9 +66,9 @@ class Run_HypoDD(Dataset):
     out_pha = open('output/%s_%s-%s.pha'%(ctlg_code, i,j),'w')
     out_pha_full = open('output/%s_%s-%s_full.pha'%(ctlg_code, i,j),'w')
     write_fin(i,j)
-    # 3. run hypoDD
+    # run hypoDD
     os.system('%s/hypoDD input/hypoDD_%s-%s.inp > output/%s-%s.hypoDD'%(hypo_root,i,j,i,j))
-    # 4. format output
+    # format output
     freloc = 'output/hypoDD_%s-%s.reloc'%(i,j)
     if not os.path.exists(freloc): return
     f=open(freloc); lines=f.readlines(); f.close()
@@ -103,11 +102,10 @@ class Run_HypoDD(Dataset):
 if __name__ == '__main__':
     # 1. format fpha & fsta
     print('format input files')
-    pha_dict = read_pha(fpha)
+    pha_dict = read_fpha()
     os.system('python mk_sta.py')
     os.system('python mk_pha.py')
     evid_lists = np.load('input/evid_lists.npy', allow_pickle=True)
-    if not os.path.exists('output'): os.makedirs('output')
     # 2. run ph2dt
     run_ph2dt()
     # 3. run hypoDD
@@ -121,8 +119,9 @@ if __name__ == '__main__':
     os.system('cat output/%s_*.ctlg > output/%s.ctlg'%(ctlg_code,ctlg_code))
     os.system('cat output/%s_[0-9]*-*[0-9].pha > output/%s.pha'%(ctlg_code,ctlg_code))
     os.system('cat output/%s_*_full.pha > output/%s_full.pha'%(ctlg_code,ctlg_code))
+    
     # delete grid files
-    reloc_grids = glob.glob('output/hypoDD_[0-9]*-[0-9]*.reloc*')
+    reloc_grids = glob.glob('output/hypoDD_[0-9]*-*[0-9].reloc*')
     ctlg_grids = glob.glob('output/%s_*.ctlg'%ctlg_code)
     pha_grids = glob.glob('output/%s_[0-9]*-[0-9]*.pha'%ctlg_code)
     input_files  = glob.glob('input/hypoDD_*.inp')
@@ -134,3 +133,4 @@ if __name__ == '__main__':
         for ctlg_grid in ctlg_grids: os.unlink(ctlg_grid)
         for pha_grid in pha_grids: os.unlink(pha_grid)
         for input_file in input_files: os.unlink(input_file)
+

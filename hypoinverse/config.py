@@ -5,13 +5,13 @@ import numpy as np
 class Config(object):
   def __init__(self):
 
-    self.ctlg_code = 'eg_pal_hyp'
+    self.ctlg_code = 'eg_hyp'
     # 1. mk_sta: format station file
     self.fsta = 'input/example_pal.sta'
     self.lat_code = 'N'
     self.lon_code = 'W'
     # 2. mk_pha: format phase file
-    self.fpha = 'input/eg_pal.pha'
+    self.fpha = 'input/eg.pha'
     self.mag_corr = 2. # hypoInv do not support neg mag
     # 3. sum2csv: format output files
     self.ref_ele = 2.5 # ref ele for CRE mod (max sta ele)
