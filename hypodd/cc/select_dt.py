@@ -7,7 +7,7 @@ cfg = config.Config()
 # i/o paths
 fdt_in = 'input/dt_all.cc'
 fdt_out = open('input/dt.cc','w')
-fpha = cfg.fpha_temp
+fpha = 'input/phase.dat'
 fsta = cfg.fsta
 # thres for linking event pairs
 cc_thres = cfg.cc_thres[1]

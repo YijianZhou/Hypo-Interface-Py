@@ -4,7 +4,7 @@ import sys, os, glob
 import time
 import numpy as np
 from obspy import read, UTCDateTime
-from dataset_ph2dt_cc import get_event_list, read_fsta, read_data_temp
+from dataset_cc import get_event_list, read_fsta, read_data_temp
 import config
 from scipy.signal import correlate
 from torch.utils.data import Dataset, DataLoader
@@ -16,7 +16,6 @@ mp.set_sharing_strategy('file_system')
 
 cfg = config.Config()
 # i/o paths
-fpha_temp = cfg.fpha_temp
 fsta = cfg.fsta
 event_root = cfg.event_root
 out_dt = open('input/dt_all.cc','w')
@@ -201,7 +200,7 @@ def calc_dist(lat, lon):
 def write_dt(data_evid, temp_evid, dt_dict, out_dt):
     out_dt.write('# {:9} {:9} 0.0\n'.format(data_evid, temp_evid))
     for net_sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
-        sta = net_sta.split('.')[1]
+        net, sta = net_sta.split('.')
         if dt_p: out_dt.write('{:7} {:8.5f} {:.4f} P\n'.format(sta, dt_p, cc_p**0.5))
         if dt_s: out_dt.write('{:7} {:8.5f} {:.4f} S\n'.format(sta, dt_s, cc_s**0.5))
 
@@ -210,7 +209,7 @@ if __name__ == '__main__':
     mp.set_start_method('spawn', force=True) # 'spawn' or 'forkserver'
     # read event data & sta file
     sta_dict = read_fsta(fsta)
-    event_list = get_event_list(fpha_temp, event_root)
+    event_list = get_event_list(event_root)
     # calc & write dt
     calc_dt(event_list, sta_dict, out_dt)
     out_dt.close()

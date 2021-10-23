@@ -10,7 +10,6 @@ import config
 
 # hypo-params
 cfg = config.Config()
-to_prep = cfg.to_prep
 samp_rate = cfg.samp_rate
 freq_band = cfg.freq_band
 win_data_p = cfg.win_data_p
@@ -29,10 +28,10 @@ ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 
 
 # get event list (st_paths)
-def get_event_list(fpha_temp, event_root):
+def get_event_list(event_root):
     # 1. read phase file
     print('reading phase file')
-    event_pick_list = read_fpha_temp(fpha_temp)
+    event_pick_list = read_fpha()
     num_events = len(event_pick_list)
     # 2. get stream paths
     print('getting event data paths:')
@@ -87,8 +86,8 @@ def read_data_temp(st_paths, tp, ts, ot):
 """
 
 # read phase file (in temp_pha format)
-def read_fpha_temp(fpha):
-    f=open(fpha); lines=f.readlines(); f.close()
+def read_fpha():
+    f=open('input/phase.dat'); lines=f.readlines(); f.close()
     event_list = []
     for line in lines:
         codes = line.split(',')
@@ -155,8 +154,7 @@ def read_stream(stream_paths):
     stream  = read(stream_paths[0])
     stream += read(stream_paths[1])
     stream += read(stream_paths[2])
-    if to_prep: return preprocess(stream)
-    else: return stream
+    return stream
 
 
 # norm for calc_cc

@@ -3,10 +3,7 @@
   loc pha --> abs_ot
   reloc pha --> lat, lon, dep
 """
-import sys
-sys.path.append('/home/zhouyj/software/data_prep')
 import numpy as np
-from reader import dtime2str
 from obspy import UTCDateTime
 import config
 
@@ -15,7 +12,7 @@ cfg = config.Config()
 fpha_name = cfg.fpha_name
 fpha_ot = cfg.fpha_ot
 fpha_loc = cfg.fpha_loc
-fout = open(cfg.fpha_temp,'w')
+fout = open('input/phase.dat','w')
 ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 lat_min, lat_max = cfg.lat_range
 lon_min, lon_max = cfg.lon_range
@@ -24,6 +21,11 @@ lon_min -= xy_pad[0]
 lon_max += xy_pad[0]
 lat_min -= xy_pad[1]
 lat_max += xy_pad[1]
+
+def dtime2str(dtime):
+    date = ''.join(str(dtime).split('T')[0].split('-'))
+    time = ''.join(str(dtime).split('T')[1].split(':'))[0:9]
+    return date + time
 
 # 1. get evid & event_name
 event_dict = {}

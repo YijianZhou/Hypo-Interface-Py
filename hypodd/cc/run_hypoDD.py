@@ -11,7 +11,7 @@ import config
 cfg = config.Config()
 ctlg_code = cfg.ctlg_code
 dep_corr = cfg.dep_corr
-fpha = cfg.fpha_temp
+fpha = 'input/phase.dat'
 num_grids = cfg.num_grids
 num_workers = cfg.num_workers
 keep_grids = cfg.keep_grids
