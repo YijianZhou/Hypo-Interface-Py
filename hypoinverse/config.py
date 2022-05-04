@@ -5,17 +5,10 @@ import numpy as np
 class Config(object):
   def __init__(self):
 
+    # i/o paths
     self.ctlg_code = 'eg_hyp'
-    # 1. mk_sta: format station file
     self.fsta = 'input/station_eg.csv'
-    self.lat_code = 'N'
-    self.lon_code = 'W'
-    # 2. mk_pha: format phase file
     self.fpha = 'input/eg.pha'
-    self.mag_corr = 2. # hypoInv do not support neg mag
-    # 3. sum2csv: format output files
-    self.ref_ele = 3 # reference elevation for CRE model, > max_sta_ele
-    self.grd_ele = 1.5 # ground elevation, set as typical sta_ele
     self.fsums = 'output/%s-*.sum'%self.ctlg_code
     self.out_ctlg = 'output/%s.ctlg'%self.ctlg_code
     self.out_pha = 'output/%s.pha'%self.ctlg_code
@@ -23,7 +16,13 @@ class Config(object):
     self.out_sum = 'output/%s.sum'%self.ctlg_code
     self.out_bad = 'output/%s_bad.csv'%self.ctlg_code
     self.out_good = 'output/%s_good.csv'%self.ctlg_code
-    # 4. run_hyp
+    # location info
+    self.lat_code = 'N'
+    self.lon_code = 'W'
+    self.mag_corr = 2. # hypoInv do not support neg mag
+    self.ref_ele = 3 # reference elevation for CRE model, > max_sta_ele
+    self.grd_ele = 1.5 # ground elevation, set as typical sta_ele
+    # hypoInverse params
     self.num_workers = 10
     self.ztr_rng = np.arange(0.1,15.1,1)
     self.p_wht = 0 # weight code
@@ -38,5 +37,5 @@ class Config(object):
     self.pos = 1.73 # provide smod or pos
     self.get_prt = False
     self.get_arc = False
-    self.keep_fsums = False
+    self.keep_fsums = False # whether get additional outputs
 
