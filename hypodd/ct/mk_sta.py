@@ -1,6 +1,5 @@
 """ Make input station file for HypoDD
 """
-import os
 import config
 
 # i/o paths
@@ -11,7 +10,6 @@ f=open(cfg.fsta); lines=f.readlines(); f.close()
 for line in lines:
     codes = line.split(',')
     net, sta = codes[0].split('.')
-    lat = float(codes[1])
-    lon = float(codes[2])
+    lat, lon = [float(code) for code in codes[1:3]]
     fout.write('{} {} {}\n'.format(sta, lat, lon))
 fout.close()

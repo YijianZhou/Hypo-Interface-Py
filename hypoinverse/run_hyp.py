@@ -5,8 +5,8 @@
     3. set i/o paths & weighting params in config file
     4. python run_hyp.py
   Output:
-    csv catalog & phase
-    sum file (hyp)
+    csv catalog & phase files
+    summary file (hyp)
 """
 import os, glob
 import numpy as np

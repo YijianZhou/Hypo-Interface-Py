@@ -1,3 +1,13 @@
+""" Run HypoDD (main function)
+  Usage:
+    1. Set i/o paths
+    2. tune ph2dt & hypoDD parameters (ref the HypoDD doc)
+    3. set velocity model in hypoDD.inp, add dep_corr here!
+    4. python run_hypoDD.py
+  Output:
+    csv catalog & phase file
+    screen output of ph2dt & hypoDD on each grid
+"""
 import os, shutil, glob
 import numpy as np
 import torch.multiprocessing as mp
@@ -119,7 +129,6 @@ if __name__ == '__main__':
     os.system('cat output/%s_*.ctlg > output/%s.ctlg'%(ctlg_code,ctlg_code))
     os.system('cat output/%s_[0-9]*-*[0-9].pha > output/%s.pha'%(ctlg_code,ctlg_code))
     os.system('cat output/%s_*_full.pha > output/%s_full.pha'%(ctlg_code,ctlg_code))
-    
     # delete grid files
     reloc_grids = glob.glob('output/hypoDD_[0-9]*-*[0-9].reloc*')
     ctlg_grids = glob.glob('output/%s_*.ctlg'%ctlg_code)
