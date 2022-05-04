@@ -21,7 +21,7 @@ class Config(object):
     self.lon_code = 'W'
     self.mag_corr = 2. # hypoInv do not support neg mag
     self.ref_ele = 3 # reference elevation for CRE model, > max_sta_ele
-    self.grd_ele = 1.5 # ground elevation, set as typical sta_ele
+    self.grd_ele = 1.5 # ground elevation, can be set as average sta_ele, modify velo_mod accordingly
     # hypoInverse params
     self.num_workers = 10
     self.ztr_rng = np.arange(0.1,15.1,1)
