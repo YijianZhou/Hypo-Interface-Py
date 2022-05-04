@@ -1,4 +1,4 @@
-""" Format hypoInverse output: sum file to csv files
+""" Format hypoInverse output: sum file to csv file
 """
 import glob, os
 import numpy as np
