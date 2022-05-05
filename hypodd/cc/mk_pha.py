@@ -1,7 +1,7 @@
 """ Make phase file for ph2dt_cc (fpha_temp)
   fpha_name --> event_name --> event data dir
   fpha_ot --> ot
-  fpha_loc --> lat, lon, dep
+  fpha_loc --> lat, lon, dep, mag
 """
 import numpy as np
 from obspy import UTCDateTime
@@ -35,7 +35,7 @@ for line in lines:
     event_dict[str(evid)] = event_name
     evid += 1
 
-# 2. get abs_ot
+# 2. get ot
 ot_dict = {}
 f=open(fpha_ot); lines=f.readlines(); f.close()
 for line in lines:
@@ -44,7 +44,7 @@ for line in lines:
     evid = codes[-1][:-1]
     ot_dict[evid] = UTCDateTime(codes[0])
 
-# 3. get reloc
+# 3. get loc
 f=open(fpha_loc); lines=f.readlines(); f.close()
 for line in lines:
     codes = line.split(',')

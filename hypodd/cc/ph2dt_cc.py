@@ -1,4 +1,4 @@
-""" Calculate differential travel time (dt.cc) by waveform correlation
+""" Calculate differential travel time by waveform correlation (dt.cc)
 """
 import sys, os, glob
 import time

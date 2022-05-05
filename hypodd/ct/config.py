@@ -1,4 +1,4 @@
-""" Configure file for hypoDD interface
+""" Configure file for hypoDD interface (dt.ct)
 """
 import os
 import numpy as np

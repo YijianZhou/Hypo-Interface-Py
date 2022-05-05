@@ -1,3 +1,5 @@
+""" Seperate functions for data i/o and signal processing
+"""
 import os
 import glob
 import time
