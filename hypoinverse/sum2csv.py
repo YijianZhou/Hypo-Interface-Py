@@ -37,11 +37,11 @@ def write_csv(fout, line, evid=None):
 # read sum files
 sum_dict = {}
 for fsum in fsums:
-  f=open(fsum); sum_lines=f.readlines(); f.close()
-  for sum_line in sum_lines:
-    evid = sum_line.split()[-1]
-    if evid not in sum_dict: sum_dict[evid] = [sum_line]
-    else: sum_dict[evid].append(sum_line)
+    f=open(fsum); sum_lines=f.readlines(); f.close()
+    for sum_line in sum_lines:
+        evid = sum_line.split()[-1]
+        if evid not in sum_dict: sum_dict[evid] = [sum_line]
+        else: sum_dict[evid].append(sum_line)
 
 # read PAL pha
 pha_dict = {}
