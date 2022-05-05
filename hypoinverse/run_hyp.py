@@ -1,6 +1,6 @@
 """ Run hypoInverse (main function)
-    1. set i/o paths & hypoInverse parameters in *config.py* 
-    2. manually write velocity model in CRE format (refer to hypoInverse doc (https://pubs.usgs.gov/of/2002/0171/pdf/of02-171.pdf) 
+    1. set i/o paths & hypoInverse parameters in config.py
+    2. manually write velocity model in CRE format (refer to hypoInverse doc: https://pubs.usgs.gov/of/2002/0171/pdf/of02-171.pdf) 
     3. python run_hyp.py
 """
 import os, glob
