@@ -1,4 +1,5 @@
 """ Run HypoDD (main function)
+    0. get original location (i.e. _hyp_full.py) with hypoInverse  
     1. set i/o paths & location grids in config.py
     2. set ph2dt & hypoDD parameters (refer to hypoDD doc: https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_OFR2001.pdf)
     3. python run_hypoDD.py
