@@ -2,7 +2,15 @@
 Interface for HypoInverse & HypoDD, implemented with Python. <br>
 
 ## HypoInverse Interface
-1. Files
+1. Files  
+1.1 config file  
+>config.py <br>
+1.2 format transfer  
+>mk_sta.py <br>
+>mk_pha.py 
+>sum2csv.py
+1.3 main  
+>run_hyp.py
 
 2. Usage
     1. modify template hyp control file (if necessary)
