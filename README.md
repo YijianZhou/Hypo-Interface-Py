@@ -21,8 +21,8 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 >(2) manually write velocity model in CRE format (refer to [hypoInverse doc](https://pubs.usgs.gov/of/2002/0171/pdf/of02-171.pdf)) <br>
 >(3) *python run_hyp.py*  <br>
 
-## HypoDD Interface 
-1. dt.ct reloc
+## HypoDD Interface  
+### 1. Relocation with *dt.ct*  
 1.1 Files
   (1) config file
     config.py
@@ -41,7 +41,7 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
   (2) run main
     python run_hypoDD.py
 
-2. dt.cc reloc
+### 2. Relocation with *dt.cc*  
 2.1 Files
   (1) config file
     config.py
@@ -63,7 +63,7 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
   (2) run main
     python run_hypoDD.py
 
-3. dt.ct + dt.cc reloc
+### 3. Relocation with *dt.ct* & *dt.cc*  
 3.1 Files
   (1) config file
     config.py
