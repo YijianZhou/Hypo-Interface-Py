@@ -14,7 +14,7 @@ import multiprocessing as mp
 import subprocess
 import config
 
-# i/o paths
+# hypoInverse params
 cfg = config.Config()
 ctlg_code = cfg.ctlg_code
 ztr_rng = cfg.ztr_rng

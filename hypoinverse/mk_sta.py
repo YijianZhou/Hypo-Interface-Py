@@ -8,8 +8,8 @@ fsta = cfg.fsta
 fout = open('input/station.dat','w')
 lat_code = cfg.lat_code
 lon_code = cfg.lon_code
-f=open(fsta); lines=f.readlines(); f.close()
 
+f=open(fsta); lines=f.readlines(); f.close()
 for line in lines:
     codes = line.split(',')
     net, sta = codes[0].split('.')

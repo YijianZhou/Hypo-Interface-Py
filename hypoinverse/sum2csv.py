@@ -6,10 +6,6 @@ import config
 
 # i/o paths
 cfg = config.Config()
-grd_ele = cfg.grd_ele # typical station elevation
-mag_corr = cfg.mag_corr # hypoInv do not support neg mag
-lat_code = cfg.lat_code
-lon_code = cfg.lon_code
 fsums = glob.glob(cfg.fsums)
 out_ctlg = open(cfg.out_ctlg,'w')
 out_sum = open(cfg.out_sum,'w')
@@ -17,6 +13,10 @@ out_bad = open(cfg.out_bad,'w')
 out_good = open(cfg.out_good,'w')
 out_pha = open(cfg.out_pha,'w')
 out_pha_full = open(cfg.out_pha_full,'w')
+grd_ele = cfg.grd_ele 
+mag_corr = cfg.mag_corr 
+lat_code = cfg.lat_code
+lon_code = cfg.lon_code
 
 
 def write_csv(fout, line, evid=None):
@@ -33,7 +33,6 @@ def write_csv(fout, line, evid=None):
     mag = float(line[48:52]) - mag_corr
     if evid: fout.write('{},{:.4f},{:.4f},{:.1f},{:.2f},{}\n'.format(dtime, lat, lon, dep+grd_ele, mag, evid))
     else: fout.write('{},{:.4f},{:.4f},{:.1f},{:.2f}\n'.format(dtime, lat, lon, dep+grd_ele, mag))
-
 
 # read sum files
 sum_dict = {}
@@ -52,7 +51,6 @@ for line in lines:
     codes = line.split(',')
     if len(codes[0])>14: pha_dict[str(evid)] = []; evid+=1
     else: pha_dict[str(evid-1)].append(line)
-
 
 for evid, sum_lines in sum_dict.items():
     # merge sum lines
@@ -85,7 +83,6 @@ for evid, sum_lines in sum_dict.items():
     for pha_line in pha_lines: 
         out_pha.write(pha_line)
         out_pha_full.write(pha_line)
-
 out_ctlg.close()
 out_sum.close()
 out_bad.close()
