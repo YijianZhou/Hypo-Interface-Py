@@ -64,6 +64,7 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 >outputs: .csv catalog, phase files, and  hypoDD screen prints for each grid  <br>
 
 #### 2. Usage
+>(0) get absolute location (i.e. *_hyp_full.py*) and *dt.ct* relocation (i.e. *_ct_full.py*)  <br>
 >(1) set i/o paths, location grids, and ph2dt_cc parameters in *config.py*  <br>
 >(2) set hypoDD parameters (refer to [hypoDD doc](https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_OFR2001.pdf)) <br>
 >(3) *python run_hypoDD.py*  <br>
@@ -71,7 +72,7 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 ### Relocation with *dt.ct & dt.cc*  
 #### 1. Files
 1.1 config file  <br>
->*config.py* and *hypoDD.inp*  <br>
+>*config.py*, *ph2dt.inp* and *hypoDD.inp*  <br>
 
 1.2 format transfer  <br>
 >*mk_sta.py*, *mk_pha.py*, and *mk_event.py*  <br>
@@ -84,10 +85,11 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 >*run_hypoDD.py*  <br>
 
 1.5 inputs & outputs <br>
->inputs: *eg.pha*, *eg_hyp_full.pha*, *eg_ct_full.pha* and *station_eg.csv* (velocity model is set in hypoDD.inp)  <br>
+>inputs: *eg.pha*, *eg_hyp_full.pha*, and *station_eg.csv* (velocity model is set in hypoDD.inp)  <br>
 >outputs: .csv catalog, phase files, and  hypoDD screen prints for each grid  <br>
 
 #### 2. Usage
+>(0) get original location (i.e. *_hyp_full.py*) with hypoInverse  <br>
 >(1) set i/o paths, location grids, and ph2dt_cc parameters in *config.py*  <br>
->(2) set hypoDD parameters (refer to [hypoDD doc](https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_OFR2001.pdf)) <br>
+>(2) set ph2dt & hypoDD parameters (refer to [hypoDD doc](https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_OFR2001.pdf)) <br>
 >(3) *python run_hypoDD.py*  <br>
