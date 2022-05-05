@@ -1,12 +1,7 @@
 """ Run hypoInverse (main function)
-  Usage:
-    1. modify template hyp control file (if necessary)
-    2. manually write velo mod (e.g., CRE file), include ref ele if necessary
-    3. set i/o paths & weighting params in config file
-    4. python run_hyp.py
-  Output:
-    csv catalog & phase files
-    summary file (hyp)
+    1. set i/o paths & hypoInverse parameters in *config.py* 
+    2. manually write velocity model in CRE format (refer to hypoInverse doc (https://pubs.usgs.gov/of/2002/0171/pdf/of02-171.pdf) 
+    3. python run_hyp.py
 """
 import os, glob
 import numpy as np
