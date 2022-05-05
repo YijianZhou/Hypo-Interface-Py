@@ -1,13 +1,8 @@
 """ Run HypoDD (main function)
-  Usage:
-    1. reloc with hypoInverse or hypoDD (dt.ct) to get fpha_ot
-    2. cut events
-    2. tune hypoDD parameters (ref the HypoDD doc)
-    3. set velocity model in hypoDD.inp, add dep_corr here!
-    4. python run_hypoDD.py
-  Output:
-    csv catalog & phase file
-    screen output of ph2dt & hypoDD on each grid
+0. get original location (i.e. _hyp_full.py) with hypoInverse 
+1. set i/o paths, location grids, and ph2dt_cc parameters in config.py
+2. set ph2dt & hypoDD parameters (refer to hypoDD doc: https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_OFR2001.pdf)
+3. cut events data in ./preprocess & python run_hypoDD.py
 """
 import os, shutil, glob
 import numpy as np
