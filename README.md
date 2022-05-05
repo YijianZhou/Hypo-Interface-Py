@@ -4,12 +4,12 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 ## HypoInverse Interface
 ### 1. Files  
 1.1 config file  <br>
->config.py <br>
-1.2 format transfer  
->mk_sta.py <br>
->mk_pha.py 
->sum2csv.py
-1.3 main  
+>config.py  <br>
+1.2 format transfer  <br>
+>mk_sta.py  <br>
+>mk_pha.py  <br>
+>sum2csv.py  <br>
+1.3 main  <br>
 >run_hyp.py
 
 ### 2. Usage
