@@ -10,7 +10,7 @@ warnings.filterwarnings("ignore")
 
 # i/o paths
 cfg = config.Config()
-fpha = 'input/phase.dat'
+fpha = 'input/phase.temp'
 dep_corr = cfg.dep_corr
 ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 lat_min, lat_max = cfg.lat_range

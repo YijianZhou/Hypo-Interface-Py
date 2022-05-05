@@ -1,10 +1,11 @@
-""" Make phase file for ph2dt_cc
-  event_name --> event data dir
-  loc pha --> abs_ot
-  reloc pha --> lat, lon, dep
+""" Make phase file for ph2dt_cc (fpha_temp)
+  fpha_name --> event_name --> event data dir
+  fpha_ot --> ot
+  fpha_loc --> lat, lon, dep
 """
 import numpy as np
 from obspy import UTCDateTime
+from dataset_cc import dtime2str
 import config
 
 # i/o paths
@@ -12,7 +13,7 @@ cfg = config.Config()
 fpha_name = cfg.fpha_name
 fpha_ot = cfg.fpha_ot
 fpha_loc = cfg.fpha_loc
-fout = open('input/phase.dat','w')
+fout = open('input/phase.temp','w')
 ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 lat_min, lat_max = cfg.lat_range
 lon_min, lon_max = cfg.lon_range
@@ -22,10 +23,6 @@ lon_max += xy_pad[0]
 lat_min -= xy_pad[1]
 lat_max += xy_pad[1]
 
-def dtime2str(dtime):
-    date = ''.join(str(dtime).split('T')[0].split('-'))
-    time = ''.join(str(dtime).split('T')[1].split(':'))[0:9]
-    return date + time
 
 # 1. get evid & event_name
 event_dict = {}

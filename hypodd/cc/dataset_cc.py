@@ -1,5 +1,3 @@
-""" Data pipeline
-"""
 import os
 import glob
 import time
@@ -10,12 +8,14 @@ import config
 
 # hypo-params
 cfg = config.Config()
+fpha = 'input/phase.temp' # fpha_temp format
 samp_rate = cfg.samp_rate
 freq_band = cfg.freq_band
-win_data_p = cfg.win_data_p
-win_data_s = cfg.win_data_s
+dt_thres = cfg.dt_thres[0]
 win_temp_p = cfg.win_temp_p
 win_temp_s = cfg.win_temp_s
+win_data_p = [win+dt_thres[0] for win in win_temp_p]
+win_data_s = [win+dt_thres[1] for win in win_temp_s]
 chn_p = cfg.chn_p
 chn_s = cfg.chn_s
 npts_data_p = int(samp_rate*sum(win_data_p))
@@ -31,7 +31,7 @@ ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 def get_event_list(event_root):
     # 1. read phase file
     print('reading phase file')
-    event_pick_list = read_fpha()
+    event_pick_list = read_fpha_temp(fpha)
     num_events = len(event_pick_list)
     # 2. get stream paths
     print('getting event data paths:')
@@ -52,7 +52,6 @@ def get_event_list(event_root):
             pha_dict[net_sta] = [st_paths, tp, ts]
         event_list.append([evid, event_loc, pha_dict])
     return event_list
-
 
 # read event data as data & temp
 def read_data_temp(st_paths, tp, ts, ot):
@@ -81,13 +80,9 @@ def read_data_temp(st_paths, tp, ts, ot):
     temp = [temp_p, temp_s, norm_temp_p, norm_temp_s]
     return data, temp, [ttp, tts]
 
-
-""" file reader
-"""
-
 # read phase file (in temp_pha format)
-def read_fpha():
-    f=open('input/phase.dat'); lines=f.readlines(); f.close()
+def read_fpha_temp(fpha):
+    f=open(fpha); lines=f.readlines(); f.close()
     event_list = []
     for line in lines:
         codes = line.split(',')
@@ -107,6 +102,17 @@ def read_fpha():
             event_list[-1][-1][net_sta] = [tp, ts]
     return event_list
 
+def read_fpha_dict(fpha):
+    event_dict = {}
+    f=open(fpha); lines=f.readlines(); f.close()
+    for line in lines:
+        codes = line.split(',')
+        if len(codes[0])>10: 
+            evid = codes[0].split('_')[0]
+            lat, lon, dep = [float(code) for code in codes[2:5]]
+            event_dict[evid] = [[lat, lon, dep],[]]
+        else: event_dict[evid][-1].append(line)
+    return event_dict
 
 # read sta file
 def read_fsta(fsta):
@@ -114,13 +120,11 @@ def read_fsta(fsta):
     sta_dict = {}
     for line in lines:
         net_sta, lat, lon, ele = line.split(',')[0:4]
+        net, sta = net_sta.split('.')
         lat, lon = float(lat), float(lon)
         sta_dict[net_sta] = [lat, lon]
+        sta_dict[sta] = [lat, lon] #TODO
     return sta_dict
-
-
-""" stream processing
-"""
 
 def preprocess(stream):
     # time alignment
@@ -148,7 +152,6 @@ def preprocess(stream):
     else:
         print('filter type not supported!'); return []
 
-
 # read & preprocess stream
 def read_stream(stream_paths):
     stream  = read(stream_paths[0])
@@ -156,16 +159,25 @@ def read_stream(stream_paths):
     stream += read(stream_paths[2])
     return stream
 
-
 # norm for calc_cc
 def calc_norm(data, npts):
     data_cum = [np.cumsum(di**2) for di in data]
     return np.array([np.sqrt(di[npts:]-di[:-npts]) for di in data_cum])
-
 
 # obspy stream --> np.array
 def st2np(stream, npts):
     st_np = np.zeros([len(stream), npts], dtype=np.float64)
     for i,trace in enumerate(stream): st_np[i][0:npts] = trace.data[0:npts]
     return st_np
+
+def dtime2str(dtime):
+    date = ''.join(str(dtime).split('T')[0].split('-'))
+    time = ''.join(str(dtime).split('T')[1].split(':'))[0:9]
+    return date + time
+
+def calc_dist_km(lat, lon):
+    cos_lat = np.cos(np.mean(lat) * np.pi/180)
+    dx = cos_lat * (lon[1]-lon[0])
+    dy = lat[1]-lat[0]
+    return 111*(dx**2 + dy**2)**0.5
 

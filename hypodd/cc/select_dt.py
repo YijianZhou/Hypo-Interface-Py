@@ -1,14 +1,17 @@
 """ Further selection of dt.cc
 """
 import numpy as np
+from dataset_cc import read_fsta, read_fpha_dict, calc_dist_km
 import config
 
 cfg = config.Config()
 # i/o paths
 fdt_in = 'input/dt_all.cc'
 fdt_out = open('input/dt.cc','w')
-fpha = 'input/phase.dat'
+fpha = 'input/phase.temp'
+event_dict = read_fpha_dict(fpha)
 fsta = cfg.fsta
+sta_dict = read_fsta(fsta)
 # thres for linking event pairs
 cc_thres = cfg.cc_thres[1]
 loc_dev_thres = cfg.loc_dev_thres[1]
@@ -16,37 +19,6 @@ dep_dev_thres = cfg.dep_dev_thres[1]
 dist_thres = cfg.dist_thres[1]
 dt_thres = cfg.dt_thres[1]
 num_sta_thres = cfg.num_sta_thres[1]
-
-
-""" Base functions
-"""
-def calc_dist(lat, lon):
-    cos_lat = np.cos(lat[0] * np.pi / 180)
-    dx = cos_lat * (lon[1]-lon[0])
-    dy = lat[1]-lat[0]
-    return 111*(dx**2 + dy**2)**0.5
-
-
-# read fsta
-sta_dict = {}
-f=open(fsta); lines=f.readlines(); f.close()
-for line in lines:
-    net_sta, lat, lon, ele = line.split(',')[0:4]
-    sta = net_sta.split('.')[1]
-    lat, lon = float(lat), float(lon)
-    sta_dict[sta] = [lat, lon]
-
-
-# read fpha
-print('reading %s'%fpha)
-event_dict = {}
-f=open(fpha); lines=f.readlines(); f.close()
-for line in lines:
-    codes = line.split(',')
-    if len(codes[0])<10: continue
-    evid = codes[0].split('_')[0]
-    lat, lon, dep = [float(code) for code in codes[2:5]]
-    event_dict[evid] = [lat, lon, dep]
 
 
 # read dt.cc
@@ -61,10 +33,10 @@ for i,line in enumerate(lines):
         data_id, temp_id = codes[1:3]
         if data_id not in event_dict or temp_id not in event_dict: 
             to_add = False; continue
-        data_lat, data_lon, data_dep = event_dict[data_id]
-        temp_lat, temp_lon, temp_dep = event_dict[temp_id]
+        data_lat, data_lon, data_dep = event_dict[data_id][0]
+        temp_lat, temp_lon, temp_dep = event_dict[temp_id][0]
         # 1. select loc dev
-        loc_dev = calc_dist([data_lat,temp_lat], [data_lon,temp_lon])
+        loc_dev = calc_dist_km([data_lat,temp_lat], [data_lon,temp_lon])
         dep_dev = abs(data_dep - temp_dep)
         if not (loc_dev<loc_dev_thres and dep_dev<dep_dev_thres):
             to_add = False; continue
@@ -74,8 +46,8 @@ for i,line in enumerate(lines):
         # 2. select by epicentral distance
         sta = codes[0]
         sta_lat, sta_lon = sta_dict[sta]
-        data_dist = calc_dist([sta_lat,data_lat], [sta_lon,data_lon])
-        temp_dist = calc_dist([sta_lat,temp_lat], [sta_lon,temp_lon])
+        data_dist = calc_dist_km([sta_lat,data_lat], [sta_lon,data_lon])
+        temp_dist = calc_dist_km([sta_lat,temp_lat], [sta_lon,temp_lon])
         if min(data_dist, temp_dist)>dist_thres: continue
         # select by CC
         dt, wht = [float(code) for code in codes[1:3]]
