@@ -1,32 +1,31 @@
+""" Run HypoDD (main function)
+  Usage:
+    1. reloc with hypoInverse or hypoDD (dt.ct) to get fpha_ot
+    2. cut events
+    2. tune hypoDD parameters (ref the HypoDD doc)
+    3. set velocity model in hypoDD.inp, add dep_corr here!
+    4. python run_hypoDD.py
+  Output:
+    csv catalog & phase file
+    screen output of ph2dt & hypoDD on each grid
+"""
 import os, shutil, glob
 import numpy as np
 import torch.multiprocessing as mp
 from torch.utils.data import Dataset, DataLoader
 from obspy import UTCDateTime
+from dataset_cc import read_fpha_dict
 import config
 
 # reloc config
 cfg = config.Config()
+fpha = 'input/phase.temp' # in fpha_temp format
 ctlg_code = cfg.ctlg_code
 dep_corr = cfg.dep_corr
-fpha = cfg.fpha_temp
 num_grids = cfg.num_grids
 num_workers = cfg.num_workers
 keep_grids = cfg.keep_grids
 hypo_root = cfg.hypo_root
-
-
-# read fpha with evid
-def read_pha(fpha):
-    pha_dict = {}
-    f=open(fpha); lines=f.readlines(); f.close()
-    for line in lines:
-        codes = line.split(',')
-        if len(codes[0])>=14:
-            evid = codes[0].split('_')[0]
-            pha_dict[evid] = []
-        else: pha_dict[evid].append(line)
-    return pha_dict
 
 
 # write hypoDD input file
@@ -40,16 +39,15 @@ def write_fin(i,j):
         fout.write(line)
     fout.close()
 
-
 def run_ph2dt():
     for i in range(num_grids[0]):
       for j in range(num_grids[1]):
         print('run ph2dt: grid %s-%s'%(i,j))
         shutil.copy('input/phase_%s-%s.dat'%(i,j), 'input/phase.dat')
         os.system('%s/ph2dt ph2dt.inp > output/%s-%s.ph2dt'%(hypo_root,i,j))
-        os.system('mv event.sel event.dat dt.ct input')
+        os.system('mv dt.ct input')
         os.rename('input/dt.ct','input/dt_%s-%s.ct'%(i,j))
-        os.unlink('ph2dt.log')
+        os.system('rm event.sel event.dat ph2dt.log')
 
 
 class Run_HypoDD(Dataset):
@@ -76,7 +74,7 @@ class Run_HypoDD(Dataset):
         codes = line.split()
         evid = codes[0]
         if int(evid) not in evid_list: continue
-        pha_lines = pha_dict[evid]
+        pha_lines = event_dict[evid][1]
         # get loc info
         lat, lon, dep = codes[1:4]
         dep = round(float(dep) - dep_corr, 2)
@@ -102,12 +100,12 @@ class Run_HypoDD(Dataset):
 if __name__ == '__main__':
     # 1. run ph2dt
     print('run ph2dt')
-    os.system('python mk_sta.py')
-    os.system('python mk_pha.py')
-    os.system('python mk_event.py')
-    os.system('python ph2dt_cc.py')
+#    os.system('python mk_sta.py')
+#    os.system('python mk_pha.py')
+#    os.system('python mk_event.py')
+#    os.system('python ph2dt_cc.py')
     os.system('python select_dt.py')
-    pha_dict = read_pha(fpha)
+    event_dict = read_fpha_dict(fpha)
     evid_lists = np.load('input/evid_lists.npy', allow_pickle=True)
     if not os.path.exists('output'): os.makedirs('output')
     run_ph2dt()
@@ -135,3 +133,4 @@ if __name__ == '__main__':
         for ctlg_grid in ctlg_grids: os.unlink(ctlg_grid)
         for pha_grid in pha_grids: os.unlink(pha_grid)
         for input_file in input_files: os.unlink(input_file)
+

@@ -5,46 +5,42 @@ class Config(object):
   def __init__(self):
 
     # 1. i/o paths
-    self.ctlg_code = 'example_ct-cc'
-    self.fsta = 'input/example.sta'
-    self.fpha_name = 'input/example_name.pha'
-    self.fpha_loc = 'input/example_loc.pha'
-    self.fpha_temp = 'input/example.temp'
+    self.hypo_root = '/home/zhouyj/bin'
+    self.ctlg_code = 'eg_ct-cc'
+    self.fsta = 'input/station_eg.csv'
+    self.fpha_name = 'input/eg.pha'
+    self.fpha_loc = 'input/eg_hyp_full.pha'
     self.out_ctlg = 'output/%s.ctlg'%self.ctlg_code
     self.out_pha = 'output/%s.pha'%self.ctlg_code
     self.out_pha_full = 'output/%s_full.pha'%self.ctlg_code
+    self.event_root = '/data4/bigdata/zhouyj/Example_events'
     # 2. ph2dt_cc
-    # input files
-    self.event_root = '/data/Example_events'
-    self.num_workers = 20
-    self.dep_corr = 5 # avoid air quake
-    # thres for event pair linking
-    self.cc_thres = [0.3, 0.3] # CC thres for event pair
-    self.loc_dev_thres = [8,5] # km, maximum location separation
-    self.dep_dev_thres = [4,4] # km, maximum location separation
-    self.dist_thres = [150, 150] # km, max epicentral dist
-    self.dt_thres = [[1.,1.6], [1,1.8]]
-    self.num_sta_thres = [4,4]
-    self.max_nbr = 200
+    # event linkage (initial calc & further selection)
+    self.cc_thres = [0.3, 0.3]    # CC thres for event pair
+    self.loc_dev_thres = [3, 3]    # km, maximum location separation
+    self.dep_dev_thres = [4, 4]    # km, maximum location separation
+    self.dist_thres = [100, 80]    # km, max epicentral dist
+    self.dt_thres = [[0.6,1.], [0.5,0.8]]
+    self.num_sta_thres = [4,4]    # min sta_num for one event pair
+    self.max_sta = 15    # max sta_num for one event pair
+    self.max_nbr = 200     # max number of neighbor event
+    self.temp_mag = 0.    # min mag for templates
+    self.temp_sta = 4    # min sta_num for templates
     # data preprocess
-    self.to_prep = False
-    self.freq_band = [1.,40.]
+    self.freq_band = [2.,20.]
     self.samp_rate = 100
-    self.chn_p = [[2],[0,1,2]][0] # chn for P picking
-    self.chn_s = [[0,1],[0,1,2]][0] # chn for S picking
-    self.win_data_p = [1.5,2.5]
-    self.win_data_s = [1.,3.]
-    self.win_temp_p = [0.2,1.3]
-    self.win_temp_s = [0.2,1.8]
-    self.temp_mag = 0.5
-    self.temp_sta = 5
-    self.max_sta = 15
+    self.chn_p = [2]    # chn for P picking
+    self.chn_s = [0,1]    # chn for S picking
+    self.win_temp_p = [0.5,2.]
+    self.win_temp_s = [0.2,3.8] # pre-post phase arrival
+    self.win_event = [5, 20] # event data cutting, just long enough
     # 3. run hypoDD
-    self.hypo_root = '/home/zhouyj/bin'
-    self.ot_range = '20150619-20160515'
-    self.lat_range = [27.25,28.5]
-    self.lon_range = [84.25,86.75]
-    self.num_grids = [4,4] # x,y (lon, lat)
-    self.xy_pad = [0.1,0.11] # degree
+    self.ot_range = '20190704-20190710'
+    self.lat_range = [35.45,36.05]
+    self.lon_range = [-117.8,-117.25]
+    self.num_grids = [1,1]    # x,y (lon, lat)
+    self.xy_pad = [0.045,0.036]    # degree
+    self.dep_corr = 5    # avoid air quake, modify velo_mod accordingly
+    self.num_workers = 10
     self.keep_grids = False
 

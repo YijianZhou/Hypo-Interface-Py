@@ -53,8 +53,8 @@ output/hypoDD.src
 * DAMP:    		damping (for lsqr only) 
 *       ---  CROSS DATA ----- ----CATALOG DATA ----
 * NITER WTCCP WTCCS WRCC WDCC WTCTP WTCTS WRCT WDCT DAMP
-  4     0.05   0.1    6   5    1.0   0.5   6   10   120
-  4     0.5    1.0    6   4    .1    0.05  6    8   120
+  4     0.05   0.1    6  2.5   1.0   0.5   6   5   80
+  4     0.5    1.0    6  2.    0.1   0.05  6   5   80
 *
 *--- 1D model:
 * NLAY:		number of model layers  
@@ -62,10 +62,10 @@ output/hypoDD.src
 * TOP:		depths of top of layer (km) 
 * VEL: 		layer velocities (km/s)
 * NLAY  RATIO 
-   3     1.7
+   9     1.73
 * TOP & VEL (add dep_corr here)
- 0.0  29.5  61.5
- 6.0  6.70  8.10
+ 0.0   6.0   7.0   8.0   9.0  10.0  11.0  12.0  13.0  35.0
+ 4.74  5.01  5.35  5.71  6.07  6.17  6.27  6.34  6.39  7.8
 *
 *--- event selection:
 * CID: 	cluster to be relocated (0 = all)

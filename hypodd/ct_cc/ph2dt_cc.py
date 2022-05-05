@@ -4,7 +4,7 @@ import sys, os, glob
 import time
 import numpy as np
 from obspy import read, UTCDateTime
-from dataset_ph2dt_cc import get_event_list, read_fsta, read_data_temp
+from dataset_cc import get_event_list, read_fsta, read_data_temp, calc_dist_km
 import config
 from scipy.signal import correlate
 from torch.utils.data import Dataset, DataLoader
@@ -16,7 +16,6 @@ mp.set_sharing_strategy('file_system')
 
 cfg = config.Config()
 # i/o paths
-fpha_temp = cfg.fpha_temp
 fsta = cfg.fsta
 event_root = cfg.event_root
 out_dt = open('input/dt_all.cc','w')
@@ -33,14 +32,33 @@ temp_sta = cfg.temp_sta
 max_nbr = cfg.max_nbr
 # data info
 samp_rate = cfg.samp_rate
-win_data_p = cfg.win_data_p
-win_data_s = cfg.win_data_s
 win_temp_p = cfg.win_temp_p
 win_temp_s = cfg.win_temp_s
+win_data_p = [win+dt_thres[0] for win in win_temp_p]
+win_data_s = [win+dt_thres[1] for win in win_temp_s]
 tt_shift_p = win_temp_p[0] - win_data_p[0]
 tt_shift_s = win_temp_s[0] - win_data_s[0]
 dep_corr = cfg.dep_corr
 
+
+def calc_cc(data, temp, norm_data, norm_temp):
+    num_chn, len_data = data.shape
+    len_temp = temp.shape[1]
+    cc = []
+    for i in range(num_chn):
+        cci = correlate(data[i], temp[i], mode='valid')[1:]
+        cci /= norm_data[i] * norm_temp[i]
+        cci[np.isinf(cci)] = 0.
+        cci[np.isnan(cci)] = 0.
+        cc.append(cci)
+    return np.mean(cc,axis=0)
+
+def write_dt(data_evid, temp_evid, dt_dict, out_dt):
+    out_dt.write('# {:9} {:9} 0.0\n'.format(data_evid, temp_evid))
+    for net_sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
+        net, sta = net_sta.split('.')
+        if dt_p: out_dt.write('{:7} {:8.5f} {:.4f} P\n'.format(sta, dt_p, cc_p**0.5))
+        if dt_s: out_dt.write('{:7} {:8.5f} {:.4f} S\n'.format(sta, dt_s, cc_s**0.5))
 
 # calc differential travel time for all event pairs
 def calc_dt(event_list, sta_dict, out_dt):
@@ -143,8 +161,8 @@ class Diff_TT(Dataset):
         dt_p, dt_s, cc_p, cc_s = [None]*4
         # check epicentral distance
         sta_lat, sta_lon = self.sta_dict[sta]
-        data_dist = calc_dist([sta_lat,data_lat], [sta_lon,data_lon])
-        temp_dist = calc_dist([sta_lat,temp_lat], [sta_lon,temp_lon])
+        data_dist = calc_dist_km([sta_lat,data_lat], [sta_lon,data_lon])
+        temp_dist = calc_dist_km([sta_lat,temp_lat], [sta_lon,temp_lon])
         if min(data_dist,temp_dist)>dist_thres: continue
         # read data & temp
         data_paths, data_tp, data_ts = pha_dict_data[sta]
@@ -175,42 +193,11 @@ class Diff_TT(Dataset):
     return len(self.pair_list)
 
 
-""" base functions
-"""
-
-def calc_cc(data, temp, norm_data, norm_temp):
-    num_chn, len_data = data.shape
-    _,       len_temp = temp.shape
-    cc = []
-    for i in range(num_chn):
-        cci = correlate(data[i], temp[i], mode='valid')[1:]
-        cci /= norm_data[i] * norm_temp[i]
-        cci[np.isinf(cci)] = 0.
-        cci[np.isnan(cci)] = 0.
-        cc.append(cci)
-    return np.mean(cc,axis=0)
-
-
-def calc_dist(lat, lon):
-    cos_lat = np.cos(lat[0] * np.pi / 180)
-    dx = cos_lat * (lon[1]-lon[0])
-    dy = lat[1]-lat[0]
-    return 111*(dx**2 + dy**2)**0.5
-
-
-def write_dt(data_evid, temp_evid, dt_dict, out_dt):
-    out_dt.write('# {:9} {:9} 0.0\n'.format(data_evid, temp_evid))
-    for net_sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
-        sta = net_sta.split('.')[1]
-        if dt_p: out_dt.write('{:7} {:8.5f} {:.4f} P\n'.format(sta, dt_p, cc_p**0.5))
-        if dt_s: out_dt.write('{:7} {:8.5f} {:.4f} S\n'.format(sta, dt_s, cc_s**0.5))
-
-
 if __name__ == '__main__':
     mp.set_start_method('spawn', force=True) # 'spawn' or 'forkserver'
     # read event data & sta file
     sta_dict = read_fsta(fsta)
-    event_list = get_event_list(fpha_temp, event_root)
+    event_list = get_event_list(event_root)
     # calc & write dt
     calc_dt(event_list, sta_dict, out_dt)
     out_dt.close()
