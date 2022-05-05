@@ -4,25 +4,25 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 ## HypoInverse Interface
 ### 1. Files  
 1.1 config file  <br>
->config.py  <br>
+>*config.py*  <br>
 
 1.2 format transfer  <br>
->mk_sta.py  <br>
->mk_pha.py  <br>
->sum2csv.py  <br>
+>*mk_sta.py*, *mk_pha.py*, and *sum2csv.py*  <br>
 
 1.3 main  <br>
->run_hyp.py
+>*run_hyp.py*  <br>
+
+1.4 inputs  <br>
+>*eg.pha*, *station_eg.csv*, and *velo_p_eg.cre*  <br>
 
 ### 2. Usage
-    1. modify template hyp control file (if necessary)
-    2. manually write velo mod (e.g., CRE file), include ref ele if necessary
-    3. set i/o paths & weighting params in config file
-    4. python run_hyp.py
+>(1) set i/o paths & hypoInverse parameters in *config.py*  <br>
+>(2) manually write velocity model in CRE format (refer to [hypoInverse doc](https://pubs.usgs.gov/of/2002/0171/pdf/of02-171.pdf)) <br>
+>(3) *python run_hyp.py*  <br>
 
-  Output:
-    csv catalog & phase files
-    summary file (hyp)
+outputs <br>
+>.csv catalog & phase files  <br>
+>summary file (hyp)  <br>
 
 ## HypoDD Interface 
 1. dt.ct reloc
