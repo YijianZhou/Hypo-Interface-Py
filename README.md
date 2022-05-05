@@ -2,8 +2,8 @@
 Interface for HypoInverse & HypoDD, implemented with Python. <br>
 
 ## HypoInverse Interface
-1. Files  
-1.1 config file  
+### 1. Files  
+1.1 config file  <br>
 >config.py <br>
 1.2 format transfer  
 >mk_sta.py <br>
@@ -12,7 +12,7 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 1.3 main  
 >run_hyp.py
 
-2. Usage
+### 2. Usage
     1. modify template hyp control file (if necessary)
     2. manually write velo mod (e.g., CRE file), include ref ele if necessary
     3. set i/o paths & weighting params in config file
