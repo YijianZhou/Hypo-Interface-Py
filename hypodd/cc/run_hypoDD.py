@@ -1,7 +1,8 @@
 """ Run HypoDD (main function)
+    0. get absolute location (i.e. _hyp_full.py) and dt.ct relocation (i.e. _ct_full.py)
     1. set i/o paths, location grids, and ph2dt_cc parameters in config.py
     2. set hypoDD parameters (refer to hypoDD doc：https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_OFR2001.pdf)
-    3. python run_hypoDD.py
+    3. cut events data in ./preprocess & python run_hypoDD.py
 """
 import os, shutil, glob
 import numpy as np
