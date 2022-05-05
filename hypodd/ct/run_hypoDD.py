@@ -1,12 +1,7 @@
 """ Run HypoDD (main function)
-  Usage:
-    1. Set i/o paths
-    2. tune ph2dt & hypoDD parameters (ref the HypoDD doc)
-    3. set velocity model in hypoDD.inp, add dep_corr here!
-    4. python run_hypoDD.py
-  Output:
-    csv catalog & phase file
-    screen output of ph2dt & hypoDD on each grid
+    1. set i/o paths & location grids in config.py
+    2. set ph2dt & hypoDD parameters (refer to hypoDD doc: https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_OFR2001.pdf)
+    3. python run_hypoDD.py
 """
 import os, shutil, glob
 import numpy as np

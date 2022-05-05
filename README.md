@@ -24,22 +24,23 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 ## HypoDD Interface  
 ### Relocation with *dt.ct*  
 #### 1. Files
-  (1) config file
-    config.py
-    hypodd.inp
-    ph2dt.inp
-  (2) format transfer
-    mk_sta.py
-    mk_pha.py
-  (3) main
-    run_hypoDD.py
+1.1 config file  <br>
+>*config.py*, *hypoDD.inp*, and *ph2dt.inp*  <br>
+
+1.2 format transfer  <br>
+>*mk_sta.py* and *mk_pha.py*  <br>
+
+1.3 main  <br>
+>*run_hypoDD.py*  <br>
+
+1.4 inputs & outputs <br>
+>inputs: *eg_hyp_full.pha* and *station_eg.csv* (velocity model is set in hypoDD.inp)  <br>
+>outputs: .csv catalog, phase files, and  hypoDD screen prints for each grid <br>
+
 #### 2. Usage
-  (1) Set parameters
-    i/o paths & params in config.py
-    ph2dt params in ph2dt.inp
-    hypoDD params in hypoDD.inp
-  (2) run main
-    python run_hypoDD.py
+>(1) set i/o paths & location grids in *config.py*  <br>
+>(2) set ph2dt & hypoDD parameters (refer to [hypoDD doc](https://www.ldeo.columbia.edu/~felixw/papers/Waldhauser_OFR2001.pdf)) <br>
+>(3) *python run_hypoDD.py*  <br>
 
 ### Relocation with *dt.cc*  
 1. Files  <br>
