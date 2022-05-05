@@ -2,7 +2,7 @@
 Interface for HypoInverse & HypoDD, implemented with Python. <br>
 
 ## HypoInverse Interface
-### 1. Files  
+#### 1. Files  
 1.1 config file  <br>
 >*config.py*  <br>
 
@@ -16,14 +16,14 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
 >inputs: *eg.pha*, *station_eg.csv*, and *velo_p_eg.cre*  <br>
 >outputs: .csv catalog, phase files, and  summary file  <br>
 
-### 2. Usage
+#### 2. Usage
 >(1) set i/o paths & hypoInverse parameters in *config.py*  <br>
 >(2) manually write velocity model in CRE format (refer to [hypoInverse doc](https://pubs.usgs.gov/of/2002/0171/pdf/of02-171.pdf)) <br>
 >(3) *python run_hyp.py*  <br>
 
 ## HypoDD Interface  
-### 1. Relocation with *dt.ct*  
-1.1 Files
+### Relocation with *dt.ct*  
+#### 1. Files
   (1) config file
     config.py
     hypodd.inp
@@ -33,7 +33,7 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
     mk_pha.py
   (3) main
     run_hypoDD.py
-1.2 Usage
+#### 2. Usage
   (1) Set parameters
     i/o paths & params in config.py
     ph2dt params in ph2dt.inp
@@ -41,8 +41,8 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
   (2) run main
     python run_hypoDD.py
 
-### 2. Relocation with *dt.cc*  
-2.1 Files
+### Relocation with *dt.cc*  
+1. Files  <br>
   (1) config file
     config.py
     hypodd.inp
@@ -56,14 +56,14 @@ Interface for HypoInverse & HypoDD, implemented with Python. <br>
     select_dt.py
   (3) main
     run_hypoDD.py
-2.2 Usage
+2. Usage
   (1) Set parameters
     i/o paths & params in config.py
     hypoDD params in hypoDD.inp
   (2) run main
     python run_hypoDD.py
 
-### 3. Relocation with *dt.ct* & *dt.cc*  
+### Relocation with *dt.ct* & *dt.cc*  
 3.1 Files
   (1) config file
     config.py
