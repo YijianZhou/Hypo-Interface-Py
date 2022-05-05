@@ -16,7 +16,7 @@ class Config(object):
     self.out_sum = 'output/%s.sum'%self.ctlg_code
     self.out_bad = 'output/%s_bad.csv'%self.ctlg_code
     self.out_good = 'output/%s_good.csv'%self.ctlg_code
-    # location info
+    # regional topo 
     self.lat_code = 'N'
     self.lon_code = 'W'
     self.mag_corr = 2.  # hypoInv do not support neg mag
