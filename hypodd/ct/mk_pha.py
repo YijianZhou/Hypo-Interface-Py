@@ -7,7 +7,7 @@ import config
 import warnings
 warnings.filterwarnings("ignore")
 
-# i/o paths
+# grid params
 cfg = config.Config()
 dep_corr = cfg.dep_corr
 ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
@@ -22,7 +22,6 @@ for i in range(num_grids[0]):
   for j in range(num_grids[1]):
     evid_lists[i].append([])
     fouts.append(open('input/phase_%s-%s.dat'%(i,j),'w'))
-# lat-lon range for each grid
 dx = (lon_max - lon_min) / num_grids[0]
 dy = (lat_max - lat_min) / num_grids[1]
 
