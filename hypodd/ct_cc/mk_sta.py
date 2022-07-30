@@ -14,4 +14,5 @@ for line in lines:
     if sta in done_list: continue
     lat, lon = [float(code) for code in codes[1:3]]
     fout.write('{} {} {}\n'.format(sta, lat, lon))
+    done_list.append(sta)
 fout.close()
