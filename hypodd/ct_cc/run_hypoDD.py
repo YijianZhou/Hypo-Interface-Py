@@ -72,8 +72,10 @@ class Run_HypoDD(Dataset):
         pha_lines = event_dict[evid][1]
         # get loc info
         lat, lon, dep = codes[1:4]
-        dep = round(float(dep) - dep_corr, 2)
-        mag = float(codes[16])
+        try:
+            dep = round(float(dep) - dep_corr, 2)
+            mag = float(codes[16])
+        except: continue
         # get time info
         year, mon, day, hour, mnt, sec = codes[10:16]
         sec = '59.999' if sec=='60.000' else sec
@@ -95,10 +97,10 @@ class Run_HypoDD(Dataset):
 if __name__ == '__main__':
     # 1. run ph2dt
     print('run ph2dt')
-#    os.system('python mk_sta.py')
-#    os.system('python mk_pha.py')
-#    os.system('python mk_event.py')
-#    os.system('python ph2dt_cc.py')
+    os.system('python mk_sta.py')
+    os.system('python mk_pha.py')
+    os.system('python mk_event.py')
+    os.system('python ph2dt_cc.py')
     os.system('python select_dt.py')
     event_dict = read_fpha_dict(fpha)
     evid_lists = np.load('input/evid_lists.npy', allow_pickle=True)

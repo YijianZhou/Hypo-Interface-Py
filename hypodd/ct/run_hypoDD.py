@@ -84,8 +84,10 @@ class Run_HypoDD(Dataset):
         pha_lines = pha_dict[evid]
         # get loc info
         lat, lon, dep = codes[1:4]
-        dep = round(float(dep) - dep_corr, 2)
-        mag = float(codes[16])
+        try:
+            dep = round(float(dep) - dep_corr, 2)
+            mag = float(codes[16])
+        except: continue
         # get time info
         year, mon, day, hour, mnt, sec = codes[10:16]
         sec = '59.999' if sec=='60.000' else sec
