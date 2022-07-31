@@ -14,6 +14,7 @@ f=open(fsta); lines=f.readlines(); f.close()
 for line in lines:
     codes = line.split(',')
     if codes[0] in done_list: continue
+    done_list.append(codes[0])
     net, sta = codes[0].split('.')
     lat, lon, ele = [float(code) for code in codes[1:4]]
     lat, lon, ele = abs(lat), abs(lon), int(ele)
