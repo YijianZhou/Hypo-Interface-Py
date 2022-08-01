@@ -135,13 +135,11 @@ def preprocess(stream):
     if start_time>end_time: print('bad data!'); return []
     st = stream.slice(start_time, end_time)
     # resample data
-    org_rate = int(st[0].stats.sampling_rate)
-    rate = np.gcd(org_rate, samp_rate)
-    if rate==1: print('warning: bad sampling rate!'); return []
-    decim_factor = int(org_rate / rate)
-    resamp_factor = int(samp_rate / rate)
-    if decim_factor!=1: st = st.decimate(decim_factor)
-    if resamp_factor!=1: st = st.interpolate(samp_rate)
+    org_rate = st[0].stats.sampling_rate
+    if org_rate!=samp_rate: st.resample(samp_rate)
+    for ii in range(len(st)):
+        st[ii].data[np.isnan(st[ii].data)] = 0
+        st[ii].data[np.isinf(st[ii].data)] = 0
     # filter
     st = st.detrend('demean').detrend('linear').taper(max_percentage=0.05, max_length=10.)
     freq_min, freq_max = freq_band
