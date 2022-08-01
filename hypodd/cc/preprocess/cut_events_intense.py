@@ -13,9 +13,8 @@ warnings.filterwarnings("ignore")
 # i/o paths
 cfg = config.Config()
 fpha = '../' + cfg.fpha_name if cfg.fpha_name[0]!='/' else cfg.fpha_name
-data_dir = '/data3/Ridgecrest'
-data_format = 'sac'
-out_root = '/data4/bigdata/zhouyj/Example_events'
+data_dir = '/data/Example_data'
+out_root = '/data/bigdata/Example_events'
 if not os.path.exists(out_root): os.makedirs(out_root)
 # signal process
 num_workers = cfg.num_workers
@@ -71,9 +70,8 @@ class Cut_Events(Dataset):
         # time shift & prep
         start_time = tp - win_len[0]
         end_time = tp + win_len[1]
-        if data_format=='sac': st = obspy_slice(stream, start_time, end_time)
-        else: st = stream.slice(start_time, end_time)
-        if 0 in st.max() or len(st)!=3: continue
+        st = obspy_slice(stream, start_time, end_time)
+        if len(st)!=3: continue
         st = st.detrend('demean')  # note: no detrend here
         # write & record out_paths
         data_paths_i.append([])

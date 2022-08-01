@@ -15,12 +15,12 @@ cfg = config.Config()
 fpha = '../' + cfg.fpha_name if cfg.fpha_name[0]!='/' else cfg.fpha_name
 data_dir = '/data/Example_data'
 data_format = 'sac'
-out_root = '/data/Example_events'
+out_root = '/data/bigdata/zhouyj/Example_events'
 if not os.path.exists(out_root): os.makedirs(out_root)
 # signal process
 num_workers = cfg.num_workers
 win_len = cfg.win_event
-get_data_dict = get_data_dict # modify this if use customized function
+get_data_dict = get_data_dict # modify this if using customized function
 samp_rate = cfg.samp_rate
 freq_band = cfg.freq_band
 
