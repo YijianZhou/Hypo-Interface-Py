@@ -37,8 +37,8 @@ def read_fsta(fsta):
 def get_data_dict(date, data_dir):
     # get data paths
     data_dict = {}
-    date_dir = '{:0>4}{:0>2}{:0>2}'.format(date.year, date.month, date.day)
-    st_paths = sorted(glob.glob(os.path.join(data_dir, date_dir, '*')))
+    date_code = '{:0>4}{:0>2}{:0>2}'.format(date.year, date.month, date.day)
+    st_paths = sorted(glob.glob(os.path.join(data_dir, date_code, '*')))
     for st_path in st_paths:
         fname = os.path.split(st_path)[-1]
         net_sta = '.'.join(fname.split('.')[0:2])
