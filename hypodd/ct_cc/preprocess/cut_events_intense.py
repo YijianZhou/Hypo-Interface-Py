@@ -13,8 +13,8 @@ warnings.filterwarnings("ignore")
 # i/o paths
 cfg = config.Config()
 fpha = '../' + cfg.fpha_name if cfg.fpha_name[0]!='/' else cfg.fpha_name
-data_dir = '/data/Example_data'
-out_root = '/data/bigdata/zhouyj/Example_events'
+data_dir = cfg.data_dir
+out_root = cfg.event_root
 if not os.path.exists(out_root): os.makedirs(out_root)
 # signal process
 num_workers = cfg.num_workers
