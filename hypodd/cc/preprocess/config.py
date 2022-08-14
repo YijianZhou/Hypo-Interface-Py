@@ -14,7 +14,8 @@ class Config(object):
     self.out_ctlg = 'output/%s.ctlg'%self.ctlg_code
     self.out_pha = 'output/%s.pha'%self.ctlg_code
     self.out_pha_full = 'output/%s_full.pha'%self.ctlg_code
-    self.event_root = '/data/Example_events'
+    self.event_root = '/data/bigdata/zhouyj/Example_events'
+    self.data_dir = '/data/Example_data'
     # 2. ph2dt_cc
     # event linkage (initial calc & further selection)
     self.cc_thres = [0.3, 0.3]    # CC thres for event pair
