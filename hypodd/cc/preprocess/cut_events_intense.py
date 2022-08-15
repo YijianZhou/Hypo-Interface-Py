@@ -75,8 +75,8 @@ class Cut_Events(Dataset):
         st = st.detrend('demean')  # note: no detrend here
         # write & record out_paths
         data_paths_i.append([])
-        for tr in st:
-            out_path = os.path.join(event_dir,'%s.%s'%(net_sta,tr.stats.channel))
+        for ii,tr in enumerate(st):
+            out_path = os.path.join(event_dir,'%s.%s'%(net_sta,ii+1))
             tr.write(out_path, format='sac')
             tr = read(out_path)[0]
             tr.stats.sac.t0, tr.stats.sac.t1 = tp-start_time, ts-start_time
