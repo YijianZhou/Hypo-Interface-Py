@@ -117,13 +117,15 @@ def read_fpha_dict(fpha):
 # read sta file
 def read_fsta(fsta):
     f=open(fsta); lines=f.readlines(); f.close()
+    done_list = []
     sta_dict = {}
     for line in lines:
         net_sta, lat, lon, ele = line.split(',')[0:4]
+        if net_sta in done_list: continue
         net, sta = net_sta.split('.')
         lat, lon = float(lat), float(lon)
         sta_dict[net_sta] = [lat, lon]
-        sta_dict[sta] = [lat, lon] #TODO
+        done_list.append(net_sta)
     return sta_dict
 
 def preprocess(stream):
