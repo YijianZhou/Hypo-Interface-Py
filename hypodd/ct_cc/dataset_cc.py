@@ -124,6 +124,7 @@ def read_fsta(fsta):
         if net_sta in done_list: continue
         net, sta = net_sta.split('.')
         sta_dict[net_sta] = [float(lat), float(lon)]
+        sta_dict[sta] = [float(lat), float(lon)] #TODO
         done_list.append(net_sta)
     return sta_dict
 
