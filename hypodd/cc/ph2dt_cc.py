@@ -17,15 +17,16 @@ mp.set_sharing_strategy('file_system')
 cfg = config.Config()
 # i/o paths
 fsta = cfg.fsta
+fpha = 'input/phase.temp' # fpha_temp format
 event_root = cfg.event_root
 out_dt = open('input/dt_all.cc','w')
 # quality control: event pair linking
 num_workers = cfg.num_workers
 cc_thres = cfg.cc_thres[0] # min cc
-loc_dev_thres = cfg.loc_dev_thres[0] # max dev loc
-dep_dev_thres = cfg.dep_dev_thres[0] # max dev loc
-dist_thres = cfg.dist_thres[0] # max epi-dist
 dt_thres = cfg.dt_thres[0] # max dt
+loc_dev_thres = cfg.loc_dev_thres[0] # max dev loc
+dep_dev_thres = cfg.dep_dev_thres[0] # max dev dep
+dist_thres = cfg.dist_thres[0] # max epi-dist
 num_sta_thres = cfg.num_sta_thres[0] # min sta
 temp_mag = cfg.temp_mag
 temp_sta = cfg.temp_sta
@@ -197,7 +198,7 @@ if __name__ == '__main__':
     mp.set_start_method('spawn', force=True) # 'spawn' or 'forkserver'
     # read event data & sta file
     sta_dict = read_fsta(fsta)
-    event_list = get_event_list(event_root)
+    event_list = get_event_list(fpha, event_root)
     # calc & write dt
     calc_dt(event_list, sta_dict, out_dt)
     out_dt.close()

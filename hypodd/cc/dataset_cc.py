@@ -10,7 +10,6 @@ import config
 
 # hypo-params
 cfg = config.Config()
-fpha = 'input/phase.temp' # fpha_temp format
 samp_rate = cfg.samp_rate
 freq_band = cfg.freq_band
 dt_thres = cfg.dt_thres[0]
@@ -30,7 +29,7 @@ ot_min, ot_max = [UTCDateTime(date) for date in cfg.ot_range.split('-')]
 
 
 # get event list (st_paths)
-def get_event_list(event_root):
+def get_event_list(fpha, event_root):
     # 1. read phase file
     print('reading phase file')
     event_pick_list = read_fpha_temp(fpha)
