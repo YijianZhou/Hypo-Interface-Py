@@ -14,10 +14,10 @@ fsta = cfg.fsta
 sta_dict = read_fsta(fsta)
 # thres for linking event pairs
 cc_thres = cfg.cc_thres[1]
+dt_thres = cfg.dt_thres[1]
 loc_dev_thres = cfg.loc_dev_thres[1]
 dep_dev_thres = cfg.dep_dev_thres[1]
 dist_thres = cfg.dist_thres[1]
-dt_thres = cfg.dt_thres[1]
 num_sta_thres = cfg.num_sta_thres[1]
 
 
