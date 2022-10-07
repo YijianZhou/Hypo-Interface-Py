@@ -54,13 +54,6 @@ def calc_cc(data, temp, norm_data, norm_temp):
         cc.append(cci)
     return np.mean(cc,axis=0)
 
-def write_dt(data_evid, temp_evid, dt_dict, out_dt):
-    out_dt.write('# {:9} {:9} 0.0\n'.format(data_evid, temp_evid))
-    for net_sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
-        net, sta = net_sta.split('.')
-        if dt_p: out_dt.write('{:7} {:8.5f} {:.4f} P\n'.format(sta, dt_p, cc_p**0.5))
-        if dt_s: out_dt.write('{:7} {:8.5f} {:.4f} S\n'.format(sta, dt_s, cc_s**0.5))
-
 # calc differential travel time for all event pairs
 def calc_dt(event_list, sta_dict, out_dt):
     # 1. get_neighbor_pairs
@@ -95,6 +88,13 @@ def calc_dt(event_list, sta_dict, out_dt):
         if len(dt_dict)<num_sta_thres: continue
         write_dt(data_evid, temp_evid, dt_dict, out_dt)
         link_num += 1
+
+def write_dt(data_evid, temp_evid, dt_dict, out_dt):
+    out_dt.write('# {:9} {:9} 0.0\n'.format(data_evid, temp_evid))
+    for net_sta, [dt_p, dt_s, cc_p, cc_s] in dt_dict.items():
+        net, sta = net_sta.split('.')
+        if dt_p: out_dt.write('{:7} {:8.5f} {:.4f} P\n'.format(sta, dt_p, cc_p**0.5))
+        if dt_s: out_dt.write('{:7} {:8.5f} {:.4f} S\n'.format(sta, dt_s, cc_s**0.5))
 
 
 class Get_Neighbor(Dataset):
