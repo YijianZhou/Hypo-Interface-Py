@@ -166,7 +166,7 @@ def calc_norm(data, npts):
 
 # obspy stream --> np.array
 def st2np(stream, npts):
-    st_np = np.zeros([len(stream), npts], dtype=np.float64)
+    st_np = np.zeros([len(stream), npts])
     for i,trace in enumerate(stream): st_np[i][0:npts] = trace.data[0:npts]
     return st_np
 
