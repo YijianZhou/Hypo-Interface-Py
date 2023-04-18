@@ -60,6 +60,9 @@ for evid, sum_lines in sum_dict.items():
         codes = sum_line.split()
         is_loc = 1 # whether loc reliable
         if '-' in codes or '#' in codes: is_loc = 0
+        if sum_line[64:69]=="*****":
+            is_loc = 0 # drop these events
+            sum_line = sum_line[:64]+"99.99"+sum_line[69:] # replace with a default value 99.99 sec
         qua = sum_line[80:81]
         npha = int(sum_line[52:55])
         azm  = float(sum_line[56:59])
