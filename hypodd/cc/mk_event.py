@@ -61,6 +61,6 @@ for line in lines:
     for idx in fout_idx: 
         fouts[idx].write('{}  {}   {} {} {:>10}\n'.format(date, time, loc, err_rms, evid))
 
-np.save('input/evid_lists.npy', evid_lists)
+np.save('input/evid_lists.npy', np.array(evid_lists, dtype=object))
 for fout in fouts: fout.close()
 
