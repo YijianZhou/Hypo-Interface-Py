@@ -6,11 +6,9 @@ import config
 
 # i/o paths
 cfg = config.Config()
-fpha = cfg.fpha
 fout = open('input/phase.dat','w')
 lat_code = cfg.lat_code
 lon_code = cfg.lon_code
-mag_corr = cfg.mag_corr # hypoInv do not support neg mag
 p_wht = cfg.p_wht
 s_wht = cfg.s_wht
 
@@ -20,15 +18,15 @@ def split_datetime(dtime):
     return date, time
 
 evid = 0
-f=open(fpha); lines=f.readlines(); f.close()
+f=open(cfg.fpha); lines=f.readlines(); f.close()
 for i,line in enumerate(lines):
   codes = line.split(',')
   if len(codes[0])>10:
     # write head line
-    ot, lat, lon, _, mag = codes[0:5]
+    ot, lat, lon = codes[0:3]
     ot = UTCDateTime(ot)
     date, time = split_datetime(ot)
-    mag = max(float(mag) + mag_corr, 0.) if not np.isnan(float(mag)) else 0
+    mag = 0  # output mag is directly passed from input
     lat = abs(float(lat))
     lon = abs(float(lon))
     lon_deg = int(lon)
@@ -46,7 +44,7 @@ for i,line in enumerate(lines):
     net_sta, tp, ts = codes[0:3]
     net, sta = net_sta.split('.')
     tp = UTCDateTime(tp) if tp!='-1' else -1
-    ts = UTCDateTime(ts) if ts[:-1]!='-1' else -1
+    ts = UTCDateTime(ts) if ts!='-1' else -1
     date = split_datetime(tp)[0] if tp!=-1 else split_datetime(ts)[0]
     hhmm = split_datetime(tp)[1][0:4] if tp!=-1 else split_datetime(ts)[1][0:4]
     tp_sec = split_datetime(tp)[1][4:] if tp!=-1 else ' '*4

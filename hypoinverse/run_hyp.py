@@ -1,7 +1,11 @@
 """ Run hypoInverse (main function)
-    1. set i/o paths & hypoInverse parameters in config.py
-    2. manually write velocity model in CRE format (refer to hypoInverse doc: https://pubs.usgs.gov/of/2002/0171/pdf/of02-171.pdf) 
+  Usage:
+    1. manually write velo mod (e.g., CRE file), include ref ele if necessary
+    2. set i/o paths & weighting params in config file
     3. python run_hyp.py
+  Output:
+    csv catalog & phase
+    sum file (hyp)
 """
 import os, glob
 import numpy as np
@@ -9,31 +13,32 @@ import multiprocessing as mp
 import subprocess
 import config
 
-# hypoInverse params
+# set config
 cfg = config.Config()
 ctlg_code = cfg.ctlg_code
 ztr_rng = cfg.ztr_rng
 ref_ele = cfg.ref_ele
-fhyp_temp = cfg.fhyp_temp
-fsums = cfg.fsums
+fsums = glob.glob('output/%s-*.sum'%ctlg_code)
 keep_fsums = cfg.keep_fsums
+get_prt = cfg.get_prt
+get_arc = cfg.get_arc
 pmod = cfg.pmod
 smod = cfg.smod
 pos = cfg.pos
-get_prt = cfg.get_prt
-get_arc = cfg.get_arc
-num_workers = cfg.num_workers
+if not pos and not smod: print('Provide pos or smod')
+fhyp_temp = 'temp_hyp/temp_vp-pos.hyp' if pos else 'temp_hyp/temp_vp-vs.hyp'
 rms_wht = cfg.rms_wht
 dist_init = cfg.dist_init
 dist_wht = cfg.dist_wht
 wht_code = cfg.wht_code
+num_workers = cfg.num_workers
 
 # format input
 print('formatting input station file')
 os.system('python mk_sta.py')
 print('formatting input phase file')
 os.system('python mk_pha.py')
-for fname in glob.glob(fsums): os.unlink(fname)
+for fsum in fsums: os.unlink(fsum)
 
 def run_hyp(ztr):
     # 1. set control file
@@ -76,5 +81,5 @@ os.system('python sum2csv.py')
 for fname in glob.glob('fort.*'): os.unlink(fname)
 for fname in glob.glob('input/%s-*.hyp'%ctlg_code): os.unlink(fname)
 if not keep_fsums:
-    for fname in glob.glob(fsums): os.unlink(fname)
+    for fsum in fsums: os.unlink(fsum)
 
