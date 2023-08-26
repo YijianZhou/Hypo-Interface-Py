@@ -8,7 +8,7 @@ class Config(object):
 
     self.ctlg_code = 'eg_hyp'
     # i/o paths
-    self.fsta = 'input/example_pal.sta'
+    self.fsta = 'input/station_eg.csv'
     self.fpha = 'input/eg.pha'
     self.out_ctlg = 'output/%s.ctlg'%self.ctlg_code
     self.out_pha = 'output/%s.pha'%self.ctlg_code
